@@ -7,7 +7,7 @@
 "use client";
 
 import { useState, useContext } from "react";
-import { ChevronLeft, ChevronRight, Cloud } from "lucide-react";
+import { ChevronLeft, ChevronRight, Cloud, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,15 +16,29 @@ import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { AuthContext } from "../../components/context/authContext"; // <-- import AuthContext
+import FormToggle from "@/components/FormToggle";
 
 const Register = () => {
 	const [currentImageIndex, setCurrentImageIndex] = useState(0);
+	const [loading, setLoading] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
 	const navigate = useNavigate();
 	const authContext = useContext(AuthContext);
 
 	if (!authContext)
 		throw new Error("AuthContext must be used within AuthProvider");
 	const { login } = authContext;
+
+	const [formData, setFormData] = useState({
+		name: "",
+		username: "",
+		email: "",
+		phone: "",
+		password: "",
+		answer: "",
+	});
+
+	const [errors, setErrors] = useState<Record<string, string>>({});
 
 	const carouselItems = [
 		{
@@ -47,22 +61,36 @@ const Register = () => {
 		},
 	];
 
-	const [formData, setFormData] = useState({
-		name: "",
-		username: "",
-		email: "",
-		phone: "",
-		password: "",
-		answer: "",
-	});
+	const validateForm = () => {
+		const newErrors: Record<string, string> = {};
+		if (!formData.name.trim()) newErrors.name = "Name is required";
+		if (!formData.username.trim()) newErrors.username = "Username is required";
+		if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+			newErrors.email = "Valid email is required";
+		if (!formData.phone || !/^[0-9+\-\s()]+$/.test(formData.phone))
+			newErrors.phone = "Valid phone number is required";
+		if (!formData.password || formData.password.length < 6)
+			newErrors.password = "Password must be at least 6 characters";
+		if (!formData.answer.trim()) newErrors.answer = "Answer is required";
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setFormData({ ...formData, [e.target.id]: e.target.value });
+		const { id, value } = e.target;
+		setFormData({ ...formData, [id]: value });
+		// Clear error for this field when user starts typing
+		if (errors[id]) {
+			setErrors({ ...errors, [id]: "" });
+		}
 	};
 
 	// ---------------- Email/Password Registration ----------------
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		if (!validateForm()) return;
+
+		setLoading(true);
 		try {
 			const { data } = await axiosInstance.post("/auth/register", formData);
 			toast.success(data.message);
@@ -79,12 +107,15 @@ const Register = () => {
 			navigate("/dashboard");
 		} catch (err: any) {
 			toast.error(err.response?.data?.message || "Registration failed");
+		} finally {
+			setLoading(false);
 		}
 	};
 
 	// ---------------- Google Login ----------------
 	const handleGoogleLogin = async (response: CredentialResponse) => {
 		if (!response.credential) return;
+		setLoading(true);
 		try {
 			const { data } = await axiosInstance.post("/auth/google-login", {
 				tokenId: response.credential,
@@ -104,6 +135,8 @@ const Register = () => {
 		} catch (err: any) {
 			console.error(err);
 			toast.error(err.response?.data?.message || "Google login failed");
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -176,6 +209,8 @@ const Register = () => {
 							<div className="flex-1 h-px bg-gray-200"></div>
 						</div>
 
+						<FormToggle />
+
 						{/* Form */}
 						<form className="space-y-4" onSubmit={handleSubmit}>
 							{["name", "username", "email", "phone", "password", "answer"].map(
@@ -185,34 +220,62 @@ const Register = () => {
 											htmlFor={field}
 											className="text-gray-700 font-medium">
 											{field.charAt(0).toUpperCase() + field.slice(1)}
+											<span className="text-red-500">*</span>
 										</Label>
-										<Input
-											id={field}
-											type={field === "password" ? "password" : "text"}
-											placeholder={
-												field === "answer" ? "Who is your idol?" : field
-											}
-											className="h-12 border-gray-200 focus:ring-2 focus:ring-purple-500 placeholder:text-gray-300"
-											value={formData[field as keyof typeof formData]}
-											onChange={handleChange}
-										/>
+										{field === "password" ? (
+											<div className="relative">
+												<Input
+													id={field}
+													type={showPassword ? "text" : "password"}
+													placeholder="••••••••"
+													className={`h-12 border-gray-200 focus:ring-2 focus:ring-purple-500 placeholder:text-gray-300 pr-12 ${
+														errors[field] ? "border-red-500" : ""
+													}`}
+													value={formData[field as keyof typeof formData]}
+													onChange={handleChange}
+													disabled={loading}
+												/>
+												<button
+													type="button"
+													onClick={() => setShowPassword(!showPassword)}
+													className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+													disabled={loading}>
+													{showPassword ? (
+														<EyeOff className="w-5 h-5" />
+													) : (
+														<Eye className="w-5 h-5" />
+													)}
+												</button>
+											</div>
+										) : (
+											<Input
+												id={field}
+												type="text"
+												placeholder={
+													field === "answer"
+														? "Who is your idol?"
+														: `Enter your ${field}`
+												}
+												className={`h-12 border-gray-200 focus:ring-2 focus:ring-purple-500 placeholder:text-gray-300 ${
+													errors[field] ? "border-red-500" : ""
+												}`}
+												value={formData[field as keyof typeof formData]}
+												onChange={handleChange}
+												disabled={loading}
+											/>
+										)}
+										{errors[field] && (
+											<p className="text-red-500 text-sm">{errors[field]}</p>
+										)}
 									</div>
 								)
 							)}
-							<Button className="w-full h-12 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-medium rounded-lg hover:shadow-lg transition-shadow">
-								Create Account
+							<Button
+								disabled={loading}
+								className="w-full h-12 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-medium rounded-lg hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+								{loading ? "Creating Account..." : "Create Account"}
 							</Button>
 						</form>
-						<div className="flex justify-center">
-							<p>
-								Already have an account?{" "}
-								<a
-									href="/auth/login"
-									className="text-purple-500 hover:text-purple-600 font-medium">
-									Log in
-								</a>
-							</p>
-						</div>
 					</div>
 				</div>
 
