@@ -6,7 +6,7 @@ import { TooltipProvider } from "../src/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { AuthProvider } from "./components/context/authContext"; // <-- import provider
+import { AuthProvider } from "./components/context/authContext";
 import {
 	UserPrivateRoute,
 	AdminPrivateRoute,
