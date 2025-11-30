@@ -4,41 +4,33 @@ const mongoose = require("mongoose");
 
 mongoose.connect(process.env.MONGO_URI);
 
-const userModel = mongoose.Schema(
+const planModel = mongoose.Schema(
 	{
 		name: {
 			type: String,
 			required: true,
-		},
-		username: {
-			type: String,
-			required: true,
 			unique: true,
 		},
-		email: {
+		description: {
 			type: String,
-			required: true,
 		},
-		password: {
-			type: String,
+		price: {
+			type: Number,
 			required: true,
+			default: 0,
 		},
-		phone: {
-			type: String,
-			required: true,
-		},
-		answer: {
-			type: String,
-			required: true,
-		},
-		role: {
-			type: String,
-			default: 1,
+		features: {
+			type: [String],
+			default: [],
 		},
 		status: {
 			type: String,
 			enum: ["active", "inactive"],
 			default: "active",
+		},
+		activeUsers: {
+			type: Number,
+			default: 0,
 		},
 		createdAt: {
 			type: Date,
@@ -48,4 +40,4 @@ const userModel = mongoose.Schema(
 	{ timestamps: true }
 );
 
-module.exports = mongoose.model("user", userModel);
+module.exports = mongoose.model("plan", planModel);

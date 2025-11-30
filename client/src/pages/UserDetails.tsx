@@ -10,9 +10,43 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Mail, User, Calendar, Shield, Phone } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogFooter,
+} from "@/components/ui/dialog";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import {
+	ArrowLeft,
+	Mail,
+	User,
+	Calendar,
+	Shield,
+	Phone,
+	Trash2,
+} from "lucide-react";
 import axiosInstance from "@/api/axios";
 import toast, { Toaster } from "react-hot-toast";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface UserDetails {
 	_id: string;
@@ -30,6 +64,18 @@ const UserDetailsPage = () => {
 	const navigate = useNavigate();
 	const [user, setUser] = useState<UserDetails | null>(null);
 	const [loading, setLoading] = useState(true);
+	const [editDialogOpen, setEditDialogOpen] = useState(false);
+	const [isSaving, setIsSaving] = useState(false);
+	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
+	const [editFormData, setEditFormData] = useState({
+		name: "",
+		email: "",
+		phone: "",
+		username: "",
+		status: "active" as "active" | "inactive",
+		role: "1",
+	});
 
 	useEffect(() => {
 		fetchUserDetails();
@@ -42,7 +88,7 @@ const UserDetailsPage = () => {
 			if (response.data.success) {
 				// Format the response to match our interface
 				const userData = response.data.user;
-				setUser({
+				const formattedUser: UserDetails = {
 					_id: userData._id,
 					name: userData.name,
 					email: userData.email,
@@ -57,7 +103,17 @@ const UserDetailsPage = () => {
 					joinDate: userData.createdAt
 						? new Date(userData.createdAt).toISOString().split("T")[0]
 						: new Date().toISOString().split("T")[0],
-					status: "active",
+					status: userData.status || "active",
+				};
+				setUser(formattedUser);
+				// Initialize edit form with current user data
+				setEditFormData({
+					name: userData.name,
+					email: userData.email,
+					phone: userData.phone || "",
+					username: userData.username || "",
+					status: userData.status || "active",
+					role: String(userData.role),
 				});
 			}
 		} catch (err: any) {
@@ -65,7 +121,7 @@ const UserDetailsPage = () => {
 			toast.error(
 				err.response?.data?.message || "Failed to fetch user details"
 			);
-			navigate("/admin/users");
+			navigate("/admin");
 		} finally {
 			setLoading(false);
 		}
@@ -81,6 +137,85 @@ const UserDetailsPage = () => {
 				return "bg-gray-500";
 			default:
 				return "bg-purple-500";
+		}
+	};
+
+	const handleEditClick = () => {
+		setEditDialogOpen(true);
+	};
+
+	const handleEditFormChange = (
+		field: string,
+		value: string | "active" | "inactive"
+	) => {
+		setEditFormData({ ...editFormData, [field]: value });
+	};
+
+	const handleSaveChanges = async () => {
+		if (!user) return;
+
+		// Validation
+		if (
+			!editFormData.name.trim() ||
+			!editFormData.email.trim() ||
+			!editFormData.username.trim()
+		) {
+			toast.error("Please fill in all required fields");
+			return;
+		}
+
+		setIsSaving(true);
+		try {
+			const updatePayload = {
+				name: editFormData.name,
+				email: editFormData.email,
+				phone: editFormData.phone,
+				username: editFormData.username,
+				status: editFormData.status,
+				role: parseInt(editFormData.role),
+			};
+
+			const response = await axiosInstance.put(
+				`/auth/admin/users/${user._id}`,
+				updatePayload
+			);
+
+			if (response.data.success) {
+				toast.success("User details updated successfully");
+				setEditDialogOpen(false);
+				// Refresh user details
+				fetchUserDetails();
+			}
+		} catch (err: any) {
+			console.error("Error updating user:", err);
+			toast.error(
+				err.response?.data?.message || "Failed to update user details"
+			);
+		} finally {
+			setIsSaving(false);
+		}
+	};
+
+	const handleDeleteUser = async () => {
+		if (!user) return;
+
+		setIsDeleting(true);
+		try {
+			const response = await axiosInstance.delete(
+				`/auth/admin/users/${user._id}`
+			);
+
+			if (response.data.success) {
+				toast.success("User deleted successfully");
+				setDeleteDialogOpen(false);
+				// Navigate back to admin page after deletion
+				setTimeout(() => navigate("/admin"), 1500);
+			}
+		} catch (err: any) {
+			console.error("Error deleting user:", err);
+			toast.error(err.response?.data?.message || "Failed to delete user");
+		} finally {
+			setIsDeleting(false);
 		}
 	};
 
@@ -244,12 +379,183 @@ const UserDetailsPage = () => {
 							<Button variant="outline" onClick={() => navigate("/admin")}>
 								Back
 							</Button>
-							<Button disabled className="ml-auto gradient-purple text-white">
+							<Button
+								variant="destructive"
+								onClick={() => setDeleteDialogOpen(true)}
+								className="gap-2">
+								<Trash2 className="w-4 h-4" />
+								Delete User
+							</Button>
+							<Button
+								onClick={handleEditClick}
+								className="ml-auto gradient-purple text-white">
 								Edit User
 							</Button>
 						</div>
 					</CardContent>
 				</Card>
+
+				{/* Edit User Dialog */}
+				<Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+					<DialogContent className="sm:max-w-[500px]">
+						<DialogHeader>
+							<DialogTitle>Edit User Details</DialogTitle>
+							<DialogDescription>
+								Update the user's information and settings. Changes will be
+								saved to the database.
+							</DialogDescription>
+						</DialogHeader>
+
+						<div className="space-y-4 py-4">
+							{/* Name */}
+							<div className="space-y-2">
+								<Label htmlFor="name" className="text-gray-700 font-medium">
+									Name <span className="text-red-500">*</span>
+								</Label>
+								<Input
+									id="name"
+									placeholder="Enter user name"
+									value={editFormData.name}
+									onChange={(e) => handleEditFormChange("name", e.target.value)}
+									className="h-10"
+								/>
+							</div>
+
+							{/* Email */}
+							<div className="space-y-2">
+								<Label htmlFor="email" className="text-gray-700 font-medium">
+									Email <span className="text-red-500">*</span>
+								</Label>
+								<Input
+									id="email"
+									type="email"
+									placeholder="Enter email"
+									value={editFormData.email}
+									onChange={(e) =>
+										handleEditFormChange("email", e.target.value)
+									}
+									className="h-10"
+								/>
+							</div>
+
+							{/* Username */}
+							<div className="space-y-2">
+								<Label htmlFor="username" className="text-gray-700 font-medium">
+									Username <span className="text-red-500">*</span>
+								</Label>
+								<Input
+									id="username"
+									placeholder="Enter username"
+									value={editFormData.username}
+									onChange={(e) =>
+										handleEditFormChange("username", e.target.value)
+									}
+									className="h-10"
+								/>
+							</div>
+
+							{/* Phone */}
+							<div className="space-y-2">
+								<Label htmlFor="phone" className="text-gray-700 font-medium">
+									Phone
+								</Label>
+								<Input
+									id="phone"
+									placeholder="Enter phone number"
+									value={editFormData.phone}
+									onChange={(e) =>
+										handleEditFormChange("phone", e.target.value)
+									}
+									className="h-10"
+								/>
+							</div>
+
+							{/* Status */}
+							<div className="space-y-2">
+								<Label htmlFor="status" className="text-gray-700 font-medium">
+									Status <span className="text-red-500">*</span>
+								</Label>
+								<Select
+									value={editFormData.status}
+									onValueChange={(value) =>
+										handleEditFormChange(
+											"status",
+											value as "active" | "inactive"
+										)
+									}>
+									<SelectTrigger id="status" className="h-10">
+										<SelectValue placeholder="Select status" />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="active">Active</SelectItem>
+										<SelectItem value="inactive">Inactive</SelectItem>
+									</SelectContent>
+								</Select>
+							</div>
+
+							{/* Role */}
+							<div className="space-y-2">
+								<Label htmlFor="role" className="text-gray-700 font-medium">
+									Role <span className="text-red-500">*</span>
+								</Label>
+								<Select
+									value={editFormData.role}
+									onValueChange={(value) =>
+										handleEditFormChange("role", value)
+									}>
+									<SelectTrigger id="role" className="h-10">
+										<SelectValue placeholder="Select role" />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="1">Developer</SelectItem>
+										<SelectItem value="2">Admin</SelectItem>
+										<SelectItem value="3">Viewer</SelectItem>
+									</SelectContent>
+								</Select>
+							</div>
+						</div>
+
+						<DialogFooter>
+							<Button
+								variant="outline"
+								onClick={() => setEditDialogOpen(false)}
+								disabled={isSaving}>
+								Cancel
+							</Button>
+							<Button
+								onClick={handleSaveChanges}
+								disabled={isSaving}
+								className="gradient-purple text-white">
+								{isSaving ? "Saving..." : "Save Changes"}
+							</Button>
+						</DialogFooter>
+					</DialogContent>
+				</Dialog>
+
+				{/* Delete Confirmation Dialog */}
+				<AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>Delete User</AlertDialogTitle>
+							<AlertDialogDescription>
+								Are you sure you want to delete {user?.name}? This action cannot
+								be undone and the user will be permanently removed from the
+								system.
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<div className="flex gap-3 justify-end">
+							<AlertDialogCancel disabled={isDeleting}>
+								Cancel
+							</AlertDialogCancel>
+							<AlertDialogAction
+								onClick={handleDeleteUser}
+								disabled={isDeleting}
+								className="bg-red-600 hover:bg-red-700">
+								{isDeleting ? "Deleting..." : "Delete"}
+							</AlertDialogAction>
+						</div>
+					</AlertDialogContent>
+				</AlertDialog>
 			</div>
 		</div>
 	);

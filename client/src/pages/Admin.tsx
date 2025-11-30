@@ -17,7 +17,7 @@ const Admin = () => {
 			<Toaster
 				position="top-center"
 				toastOptions={{
-					duration: 700,
+					duration: 1000,
 					style: {
 						background: "#1f1f1f",
 						color: "#fff",

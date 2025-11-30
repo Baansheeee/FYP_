@@ -1,11 +1,11 @@
 /** @format */
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Eye } from "lucide-react";
+import { Eye, RotateCw } from "lucide-react";
 import toast from "react-hot-toast";
 import axiosInstance from "@/api/axios";
 
@@ -20,16 +20,18 @@ interface User {
 
 const UsersTab = () => {
 	const navigate = useNavigate();
+	const location = useLocation();
 	const [users, setUsers] = useState<User[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [refreshing, setRefreshing] = useState(false);
 
 	useEffect(() => {
 		fetchUsers();
-	}, []);
+	}, [location]);
 
 	const fetchUsers = async () => {
 		try {
-			setLoading(true);
+			if (!refreshing) setLoading(true);
 			const response = await axiosInstance.get("/auth/admin/users");
 			if (response.data.success) {
 				setUsers(response.data.users);
@@ -39,11 +41,18 @@ const UsersTab = () => {
 			toast.error("Failed to fetch users");
 		} finally {
 			setLoading(false);
+			setRefreshing(false);
 		}
 	};
 
 	const handleViewUser = (userId: string) => {
 		navigate(`/user/${userId}`);
+	};
+
+	const handleRefresh = async () => {
+		setRefreshing(true);
+		await fetchUsers();
+		toast.success("Users list refreshed");
 	};
 
 	const getStatusColor = (status: string) => {
@@ -60,11 +69,24 @@ const UsersTab = () => {
 	return (
 		<Card className="glass-card border-border/50">
 			<CardHeader>
-				<div>
-					<CardTitle>User Management</CardTitle>
-					<p className="text-sm text-muted-foreground mt-1">
-						Total Users: {users.length}
-					</p>
+				<div className="flex items-center justify-between">
+					<div>
+						<CardTitle>User Management</CardTitle>
+						<p className="text-sm text-muted-foreground mt-1">
+							Total Users: {users.length}
+						</p>
+					</div>
+					<Button
+						size="sm"
+						variant="outline"
+						onClick={handleRefresh}
+						disabled={refreshing}
+						className="gap-2">
+						<RotateCw
+							className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`}
+						/>
+						{refreshing ? "Refreshing..." : "Refresh"}
+					</Button>
 				</div>
 			</CardHeader>
 			<CardContent>

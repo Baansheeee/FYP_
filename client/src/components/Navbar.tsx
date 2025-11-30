@@ -110,7 +110,13 @@ const Navbar = () => {
 							</DropdownMenuTrigger>
 							<DropdownMenuContent align="end">
 								<DropdownMenuItem
-									onClick={() => navigate("/dashboard")}
+									onClick={() => {
+										if (user.role === 1) {
+											navigate("/dashboard");
+										} else if (user.role === 2) {
+											navigate("/admin");
+										}
+									}}
 									className="cursor-pointer text-black">
 									<LogOut className="w-4 h-4 mr-2" />
 									Dashboard
