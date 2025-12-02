@@ -6,10 +6,10 @@ import Navbar from "@/components/Navbar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield, Users, FileText, BookOpen } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-import UsersTab from "@/components/admin/UsersTab";
-import EducationTab from "@/components/admin/EducationTab";
-import AuditLogsTab from "@/components/admin/AuditLogsTab";
-import ComplianceTab from "@/components/admin/ComplianceTab";
+import UsersTab from "@/pages/admin/UsersTab";
+import EducationTab from "@/pages/admin/EducationTab";
+import AuditLogsTab from "@/pages/admin/AuditLogsTab";
+import ComplianceTab from "@/pages/admin/ComplianceTab";
 
 const Admin = () => {
 	return (
