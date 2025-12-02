@@ -5,8 +5,8 @@
  */
 
 import { useState, useEffect } from "react";
-import { DashboardSidebar } from "@/components/DashboardSidebar";
-import Navbar from "@/components/Navbar";
+import { DashboardSidebar } from "@/components/layout/DashboardSidebar";
+import Navbar from "@/components/layout/Navbar";
 import {
 	Card,
 	CardContent,
@@ -17,7 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { CommunityForum } from "@/components/CommunityForum";
+import { CommunityForum } from "@/components/community/CommunityForum";
 import axiosInstance, { getFileUrl } from "@/api/axios";
 import {
 	GraduationCap,

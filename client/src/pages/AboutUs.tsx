@@ -2,7 +2,7 @@
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/layout/Navbar";
 import {
 	Users,
 	Target,

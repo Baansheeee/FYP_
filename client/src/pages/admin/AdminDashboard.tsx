@@ -2,7 +2,7 @@
 
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/layout/Navbar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield, Users, FileText, BookOpen } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";

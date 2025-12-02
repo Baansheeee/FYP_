@@ -1,10 +1,10 @@
 /** @format */
 
-import { DashboardSidebar } from "@/components/DashboardSidebar";
-import { StatCard } from "@/components/StatCard";
+import { DashboardSidebar } from "@/components/layout/DashboardSidebar";
+import { StatCard } from "@/components/cards/StatCard";
 import toast, { Toaster } from "react-hot-toast";
-import { ModuleCard } from "@/components/ModuleCard";
-import Navbar from "@/components/Navbar";
+import { ModuleCard } from "@/components/cards/ModuleCard";
+import Navbar from "@/components/layout/Navbar";
 import {
 	Cloud,
 	DollarSign,

@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/layout/Navbar";
 import toast from "react-hot-toast";
 import {
 	Mail,

@@ -1,4 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * eslint-disable @typescript-eslint/no-explicit-any
+ *
+ * @format
+ */
+
 /**
  * eslint-disable @typescript-eslint/no-explicit-any
  *
@@ -17,8 +22,8 @@ import toast, { Toaster } from "react-hot-toast";
 import axiosInstance from "@/api/axios";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { AuthContext } from "../../components/context/authContext";
-import RoleToggle from "../../components/RoleToggle";
-import FormToggle from "@/components/FormToggle";
+import RoleToggle from "@/components/RoleToggle";
+import FormToggle from "@/components/forms/FormToggle";
 
 const LoginPage = () => {
 	const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -212,8 +217,9 @@ const LoginPage = () => {
 								<Input
 									type="email"
 									placeholder="you@example.com"
-									className={`h-12 border-gray-200 focus:ring-2 focus:ring-purple-500 ${errors.email ? "border-red-500" : ""
-										}`}
+									className={`h-12 border-gray-200 focus:ring-2 focus:ring-purple-500 ${
+										errors.email ? "border-red-500" : ""
+									}`}
 									value={email}
 									onChange={(e) => {
 										setEmail(e.target.value);
@@ -232,8 +238,9 @@ const LoginPage = () => {
 									<Input
 										type={showPassword ? "text" : "password"}
 										placeholder="••••••••"
-										className={`h-12 border-gray-200 focus:ring-2 focus:ring-purple-500 pr-12 ${errors.password ? "border-red-500" : ""
-											}`}
+										className={`h-12 border-gray-200 focus:ring-2 focus:ring-purple-500 pr-12 ${
+											errors.password ? "border-red-500" : ""
+										}`}
 										value={password}
 										onChange={(e) => {
 											setPassword(e.target.value);
@@ -274,8 +281,7 @@ const LoginPage = () => {
 								<span>Don't have an account?</span>
 								<a
 									href="/auth/register"
-									className="font-semibold text-purple-600 hover:text-purple-700 hover:underline underline-offset-2 transition-all duration-200"
-								>
+									className="font-semibold text-purple-600 hover:text-purple-700 hover:underline underline-offset-2 transition-all duration-200">
 									Sign up
 								</a>
 							</div>
@@ -297,8 +303,9 @@ const LoginPage = () => {
 									key={index}
 									src={item.image}
 									alt={item.heading}
-									className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${index === currentImageIndex ? "opacity-100" : "opacity-0"
-										}`}
+									className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
+										index === currentImageIndex ? "opacity-100" : "opacity-0"
+									}`}
 								/>
 							))}
 						</div>
@@ -324,10 +331,11 @@ const LoginPage = () => {
 									<button
 										key={index}
 										onClick={() => setCurrentImageIndex(index)}
-										className={`w-2 h-2 rounded-full transition-all ${index === currentImageIndex
+										className={`w-2 h-2 rounded-full transition-all ${
+											index === currentImageIndex
 												? "bg-white w-6"
 												: "bg-white/50"
-											}`}
+										}`}
 									/>
 								))}
 							</div>

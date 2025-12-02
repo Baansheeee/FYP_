@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Edit2, Trash2, BookOpen, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import axiosInstance from "@/api/axios";
-import { LectureForm } from "@/components/LectureForm";
+import { LectureForm } from "@/components/forms/LectureForm";
 import {
 	AlertDialog,
 	AlertDialogAction,

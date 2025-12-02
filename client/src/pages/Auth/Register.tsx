@@ -1,4 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * eslint-disable @typescript-eslint/no-explicit-any
+ *
+ * @format
+ */
+
 /**
  * eslint-disable @typescript-eslint/no-explicit-any
  *
@@ -17,7 +22,7 @@ import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { AuthContext } from "../../components/context/authContext"; // <-- import AuthContext
-import FormToggle from "@/components/FormToggle";
+import FormToggle from "@/components/forms/FormToggle";
 
 const Register = () => {
 	const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -210,7 +215,6 @@ const Register = () => {
 							<div className="flex-1 h-px bg-gray-200"></div>
 						</div>
 
-
 						{/* Form */}
 						<form className="space-y-4" onSubmit={handleSubmit}>
 							{["name", "username", "email", "phone", "password", "answer"].map(
@@ -279,8 +283,7 @@ const Register = () => {
 								<span>Already have an account?</span>
 								<a
 									href="/auth/login"
-									className="font-semibold text-purple-600 hover:text-purple-700 hover:underline underline-offset-2 transition-all duration-200"
-								>
+									className="font-semibold text-purple-600 hover:text-purple-700 hover:underline underline-offset-2 transition-all duration-200">
 									Sign in
 								</a>
 							</div>

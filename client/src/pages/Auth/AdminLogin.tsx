@@ -17,7 +17,7 @@ import toast, { Toaster } from "react-hot-toast";
 import axiosInstance from "@/api/axios";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { AuthContext } from "../../components/context/authContext";
-import RoleToggle from "../../components/RoleToggle";
+import RoleToggle from "@/components/RoleToggle";
 
 const AdminLogin = () => {
 	const [currentImageIndex, setCurrentImageIndex] = useState(0);
