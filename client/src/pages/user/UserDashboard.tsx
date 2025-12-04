@@ -54,12 +54,6 @@ const Dashboard = () => {
 			path: "/deployment",
 		},
 		{
-			icon: Pencil,
-			title: "Visual Canvas",
-			description: "Drag and drop architecture designer",
-			path: "/canvas",
-		},
-		{
 			icon: Upload,
 			title: "Import Resources",
 			description: "Reverse engineer existing AWS resources",

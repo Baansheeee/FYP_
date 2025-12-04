@@ -1,178 +1,248 @@
 /** @format */
 
+import { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { DashboardSidebar } from "@/components/layout/DashboardSidebar";
 import Navbar from "@/components/layout/Navbar";
-import { Button } from "@/components/ui/button";
-import { Save, ZoomIn, ZoomOut, Undo2, Redo2, Grid3X3 } from "lucide-react";
+import ArchitectureCanvasWrapper from "@/components/architecture/ArchitectureCanvasWrapper";
+import { ArchitectureData } from "@/components/architecture/ArchitectureCanvasContent";
+import axiosInstance from "@/api/axios";
+import toast from "react-hot-toast";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const ArchitectureEditor = () => {
+	const { id } = useParams<{ id?: string }>();
+	const navigate = useNavigate();
+	const [architectureData, setArchitectureData] = useState<
+		ArchitectureData | undefined
+	>();
+	const [architectureInfo, setArchitectureInfo] = useState<any>(null);
+	const [loading, setLoading] = useState(!!id);
+	const [lastSavedData, setLastSavedData] = useState<ArchitectureData | null>(
+		null
+	);
+	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
+	const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const isSavingRef = useRef(false);
+
+	useEffect(() => {
+		if (id) {
+			fetchArchitecture(id);
+		}
+	}, [id]);
+
+	const fetchArchitecture = async (architectureId: string) => {
+		try {
+			setLoading(true);
+			const response = await axiosInstance.get(
+				`/architecture/${architectureId}`
+			);
+			if (response.data.success) {
+				const arch = response.data.architecture;
+				const archData: ArchitectureData = {
+					nodes: arch.nodes || [],
+					edges: arch.edges || [],
+				};
+				setArchitectureInfo({
+					name: arch.name,
+					description: arch.description,
+					status: arch.status,
+					tags: arch.tags,
+				});
+				setArchitectureData(archData);
+				setLastSavedData(archData);
+			}
+		} catch (error) {
+			console.error("Error fetching architecture:", error);
+			toast.error("Failed to load architecture");
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const handleSaveArchitecture = async (data: ArchitectureData) => {
+		try {
+			const response = await axiosInstance.post("/architecture/save", {
+				id: id,
+				name: architectureInfo?.name || "Untitled Architecture",
+				description: architectureInfo?.description || "",
+				nodes: data.nodes,
+				edges: data.edges,
+				status: architectureInfo?.status || "Draft",
+				tags: architectureInfo?.tags || [],
+			});
+
+			if (response.data.success) {
+				toast.success("Architecture saved successfully!");
+				setArchitectureData(data);
+				setLastSavedData(data);
+				// Update the architecture info in case there are changes from the server
+				if (response.data.architecture) {
+					setArchitectureInfo({
+						name: response.data.architecture.name,
+						description: response.data.architecture.description,
+						status: response.data.architecture.status,
+						tags: response.data.architecture.tags,
+					});
+				}
+			} else {
+				toast.error(response.data.message || "Failed to save architecture");
+			}
+		} catch (error: any) {
+			console.error("Error saving architecture:", error);
+			const errorMessage =
+				error.response?.data?.message || "Failed to save architecture";
+			toast.error(errorMessage);
+		} finally {
+			isSavingRef.current = false;
+		}
+	};
+
+	// Auto-save effect - saves architecture every 30 seconds if there are unsaved changes
+	useEffect(() => {
+		const setupAutoSave = () => {
+			if (autoSaveTimeoutRef.current) {
+				clearTimeout(autoSaveTimeoutRef.current);
+			}
+
+			// Check if data has changed since last save
+			if (
+				architectureData &&
+				lastSavedData &&
+				JSON.stringify(architectureData) !== JSON.stringify(lastSavedData) &&
+				!isSavingRef.current &&
+				id
+			) {
+				isSavingRef.current = true;
+				handleSaveArchitecture(architectureData);
+			}
+		};
+
+		// Set up auto-save interval (30 seconds)
+		const interval = setInterval(setupAutoSave, 30000);
+
+		return () => {
+			clearInterval(interval);
+			if (autoSaveTimeoutRef.current) {
+				clearTimeout(autoSaveTimeoutRef.current);
+			}
+		};
+	}, [architectureData, lastSavedData, id, architectureInfo]);
+
+	const handleDeleteArchitecture = async () => {
+		try {
+			setIsDeleting(true);
+			const response = await axiosInstance.delete(`/architecture/${id}`);
+
+			if (response.data.success) {
+				toast.success("Architecture deleted successfully!");
+				setShowDeleteDialog(false);
+				// Navigate back to architectures list
+				setTimeout(() => {
+					navigate("/user/architecture/list");
+				}, 1500);
+			} else {
+				toast.error(response.data.message || "Failed to delete architecture");
+			}
+		} catch (error: any) {
+			console.error("Error deleting architecture:", error);
+			const errorMessage =
+				error.response?.data?.message || "Failed to delete architecture";
+			toast.error(errorMessage);
+		} finally {
+			setIsDeleting(false);
+		}
+	};
+
+	const handleBackClick = () => {
+		navigate("/user/architecture/list");
+	};
+
+	if (loading) {
+		return (
+			<div className="w-full h-screen flex flex-col bg-gradient-to-br from-background via-purple-50/20 to-background">
+				<Navbar />
+				<div className="flex flex-1 overflow-hidden w-full">
+					<DashboardSidebar />
+					<main className="flex-1 flex items-center justify-center">
+						<div className="text-center space-y-4">
+							<div className="w-12 h-12 rounded-full border-2 border-primary/30 border-t-primary animate-spin mx-auto" />
+							<p className="text-muted-foreground">Loading architecture...</p>
+						</div>
+					</main>
+				</div>
+			</div>
+		);
+	}
+
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-background via-purple-50/20 to-background">
-			<Navbar />
-			<div className="flex w-full">
-				<DashboardSidebar />
+		<>
+			<div className="w-full h-screen flex flex-col bg-gradient-to-br from-background via-purple-50/20 to-background">
+				<Navbar />
+				<div className="flex flex-1 overflow-hidden w-full">
+					<DashboardSidebar />
+					<main className="flex-1 overflow-hidden w-full h-full">
+						<ArchitectureCanvasWrapper
+							onSave={handleSaveArchitecture}
+							onDelete={() => setShowDeleteDialog(true)}
+							initialData={architectureData}
+							onBack={handleBackClick}
+						/>
+					</main>
+				</div>
+			</div>
 
-				<main className="flex-1 overflow-auto flex flex-col">
-					{/* Toolbar */}
-					<div className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-10 p-4">
-						<div className="container mx-auto">
-							<div className="flex items-center justify-between">
-								<div className="space-y-1">
-									<h1 className="text-2xl font-bold">Architecture Editor</h1>
-									<p className="text-sm text-muted-foreground">
-										Drag components to design your architecture
-									</p>
-								</div>
-								<div className="flex gap-2">
-									<Button variant="outline" size="sm">
-										<Undo2 className="w-4 h-4 mr-2" />
-										Undo
-									</Button>
-									<Button variant="outline" size="sm">
-										<Redo2 className="w-4 h-4 mr-2" />
-										Redo
-									</Button>
-									<Button variant="outline" size="sm">
-										<ZoomOut className="w-4 h-4" />
-									</Button>
-									<Button variant="outline" size="sm">
-										<ZoomIn className="w-4 h-4" />
-									</Button>
-									<Button variant="outline" size="sm">
-										<Grid3X3 className="w-4 h-4" />
-									</Button>
-									<Button className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
-										<Save className="w-4 h-4 mr-2" />
-										Save
-									</Button>
-								</div>
+			{/* Delete Confirmation Dialog */}
+			<AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+				<AlertDialogContent className="border border-red-200/40 bg-gradient-to-br from-background to-red-50/10 shadow-lg shadow-red-500/10">
+					<AlertDialogHeader>
+						<div className="flex items-center gap-3">
+							<div className="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center">
+								<span className="text-2xl">⚠️</span>
 							</div>
+							<AlertDialogTitle className="text-xl bg-gradient-to-r from-red-600 to-red-500 bg-clip-text text-transparent">
+								Delete Architecture
+							</AlertDialogTitle>
 						</div>
-					</div>
-
-					<div className="flex-1 flex">
-						{/* Components Panel */}
-						<div className="w-64 border-r border-border/50 bg-secondary/30 overflow-y-auto p-4 space-y-4">
-							<div>
-								<h3 className="text-sm font-semibold mb-3">Compute</h3>
-								<div className="space-y-2">
-									{["EC2 Instance", "Lambda", "ECS", "Lightsail"].map(
-										(item) => (
-											<div
-												key={item}
-												className="p-3 bg-background rounded-lg border border-border/50 cursor-move hover:border-purple-300/50 text-sm font-medium transition-all">
-												{item}
-											</div>
-										)
-									)}
-								</div>
-							</div>
-
-							<div>
-								<h3 className="text-sm font-semibold mb-3">Storage</h3>
-								<div className="space-y-2">
-									{["S3", "EBS", "EFS", "Glacier"].map((item) => (
-										<div
-											key={item}
-											className="p-3 bg-background rounded-lg border border-border/50 cursor-move hover:border-purple-300/50 text-sm font-medium transition-all">
-											{item}
-										</div>
-									))}
-								</div>
-							</div>
-
-							<div>
-								<h3 className="text-sm font-semibold mb-3">Database</h3>
-								<div className="space-y-2">
-									{["RDS", "DynamoDB", "ElastiCache", "Neptune"].map((item) => (
-										<div
-											key={item}
-											className="p-3 bg-background rounded-lg border border-border/50 cursor-move hover:border-purple-300/50 text-sm font-medium transition-all">
-											{item}
-										</div>
-									))}
-								</div>
-							</div>
-
-							<div>
-								<h3 className="text-sm font-semibold mb-3">Networking</h3>
-								<div className="space-y-2">
-									{["VPC", "Load Balancer", "CloudFront", "Route 53"].map(
-										(item) => (
-											<div
-												key={item}
-												className="p-3 bg-background rounded-lg border border-border/50 cursor-move hover:border-purple-300/50 text-sm font-medium transition-all">
-												{item}
-											</div>
-										)
-									)}
-								</div>
-							</div>
-						</div>
-
-						{/* Canvas Area */}
-						<div className="flex-1 bg-gradient-to-br from-background to-secondary/20 relative overflow-auto">
-							<div className="absolute inset-0 opacity-30">
-								<svg
-									className="w-full h-full"
-									style={{
-										backgroundImage:
-											"linear-gradient(0deg, transparent 24%, rgba(200, 200, 200, 0.05) 25%, rgba(200, 200, 200, 0.05) 26%, transparent 27%, transparent 74%, rgba(200, 200, 200, 0.05) 75%, rgba(200, 200, 200, 0.05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(200, 200, 200, 0.05) 25%, rgba(200, 200, 200, 0.05) 26%, transparent 27%, transparent 74%, rgba(200, 200, 200, 0.05) 75%, rgba(200, 200, 200, 0.05) 76%, transparent 77%, transparent)",
-										backgroundSize: "50px 50px",
-									}}
-								/>
-							</div>
-
-							<div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30">
-								<div className="text-center">
-									<Grid3X3 className="w-16 h-16 mx-auto mb-4" />
-									<p className="text-lg font-medium">
-										Drag components from the left panel to start designing
-									</p>
-									<p className="text-sm mt-2">
-										Connect components to create your architecture
-									</p>
-								</div>
-							</div>
-						</div>
-
-						{/* Properties Panel */}
-						<div className="w-64 border-l border-border/50 bg-secondary/30 overflow-y-auto p-4 space-y-4">
-							<div>
-								<h3 className="text-sm font-semibold mb-3">Properties</h3>
-								<p className="text-sm text-muted-foreground">
-									Select a component to edit its properties
+						<AlertDialogDescription className="space-y-4 pt-4">
+							<p className="text-base">
+								Are you sure you want to delete{" "}
+								<strong className="text-foreground">
+									"{architectureInfo?.name || "this architecture"}"
+								</strong>
+								?
+							</p>
+							<div className="p-3 rounded-lg bg-red-500/5 border border-red-200/30">
+								<p className="text-red-600 font-semibold text-sm">
+									This action cannot be undone. All components, connections, and
+									history will be permanently deleted.
 								</p>
 							</div>
-
-							<div>
-								<label className="text-sm font-medium block mb-2">
-									Component Name
-								</label>
-								<input
-									type="text"
-									placeholder="Enter name"
-									className="w-full px-3 py-2 border border-border/50 rounded-lg text-sm"
-									disabled
-								/>
-							</div>
-
-							<div>
-								<label className="text-sm font-medium block mb-2">
-									Instance Type
-								</label>
-								<input
-									type="text"
-									placeholder="Select type"
-									className="w-full px-3 py-2 border border-border/50 rounded-lg text-sm"
-									disabled
-								/>
-							</div>
-						</div>
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<div className="flex gap-3 justify-end pt-4 border-t border-border/50">
+						<AlertDialogCancel disabled={isDeleting} className="min-w-20">
+							Cancel
+						</AlertDialogCancel>
+						<AlertDialogAction
+							onClick={handleDeleteArchitecture}
+							disabled={isDeleting}
+							className="min-w-20 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-md hover:shadow-lg hover:shadow-red-500/30 transition-all border-0">
+							{isDeleting ? "Deleting..." : "Delete"}
+						</AlertDialogAction>
 					</div>
-				</main>
-			</div>
-		</div>
+				</AlertDialogContent>
+			</AlertDialog>
+		</>
 	);
 };
 

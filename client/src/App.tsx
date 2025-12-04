@@ -13,14 +13,15 @@ import {
 	AdminPrivateRoute,
 	AuthenticatedRoute,
 } from "./components/PrivateRoutes";
+import "./styles/reactflow.css";
 import Index from "./pages/Index";
 import UserDashboard from "./pages/user/UserDashboard";
 import Chatbot from "./pages/user/Chatbot";
-import ArchitectureDesigner from "./pages/user/ArchitectureDesigner";
+import ArchitectureDesigner from "./pages/user/architecture/ArchitectureDesigner";
 import CostEstimate from "./pages/user/CostEstimate";
 import Version from "./pages/user/Version";
 import Deployment from "./pages/user/Deployment";
-import Canvas from "./pages/user/Canvas";
+// import Canvas from "./pages/user/architecture/Canvas";
 import ImportResources from "./pages/user/ImportResources";
 import DevOps from "./pages/user/DevOps";
 import Performance from "./pages/user/Performance";
@@ -50,6 +51,7 @@ import ChatSessions from "./pages/user/chatbot/ChatSessions";
 
 import ArchitectureList from "./pages/user/architecture/ArchitectureList";
 import ArchitectureEditor from "./pages/user/architecture/ArchitectureEditor";
+import ArchitectureCreate from "./pages/user/architecture/ArchitectureCreate";
 import ArchitectureTemplates from "./pages/user/architecture/ArchitectureTemplates";
 import ArchitectureDetails from "./pages/user/architecture/ArchitectureDetails";
 
@@ -165,7 +167,23 @@ const App = () => (
 								}
 							/>
 							<Route
+								path="/user/architecture/create"
+								element={
+									<UserPrivateRoute>
+										<ArchitectureCreate />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
 								path="/user/architecture/editor"
+								element={
+									<UserPrivateRoute>
+										<ArchitectureEditor />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/architecture-editor/:id"
 								element={
 									<UserPrivateRoute>
 										<ArchitectureEditor />
@@ -284,14 +302,14 @@ const App = () => (
 									</UserPrivateRoute>
 								}
 							/>
-							<Route
+							{/* <Route
 								path="/user/canvas"
 								element={
 									<UserPrivateRoute>
 										<Canvas />
 									</UserPrivateRoute>
-								}
-							/>
+								} */}
+							{/* /> */}
 							<Route
 								path="/user/import"
 								element={

@@ -64,4 +64,9 @@ const isAdmin = (req, res, next) => {
 	}
 };
 
-module.exports = { requireSignIn, isUser, isAdmin };
+module.exports = {
+	requireSignIn,
+	isUser,
+	isAdmin,
+	authMiddleware: requireSignIn,
+};

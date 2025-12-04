@@ -21,9 +21,37 @@ axiosInstance.interceptors.request.use(
 		if (token) {
 			config.headers.Authorization = `Bearer ${token}`;
 		}
+		console.log("🔷 Axios Request:", {
+			url: config.baseURL + config.url,
+			method: config.method,
+			headers: config.headers,
+			data: config.data,
+		});
 		return config;
 	},
 	(error) => {
+		return Promise.reject(error);
+	}
+);
+
+// Log all responses
+axiosInstance.interceptors.response.use(
+	(response) => {
+		console.log("✅ Axios Response:", {
+			status: response.status,
+			statusText: response.statusText,
+			url: response.config.url,
+			data: response.data,
+		});
+		return response;
+	},
+	(error) => {
+		console.error("❌ Axios Error:", {
+			status: error.response?.status,
+			statusText: error.response?.statusText,
+			data: error.response?.data,
+			message: error.message,
+		});
 		return Promise.reject(error);
 	}
 );
