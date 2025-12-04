@@ -1,17 +1,6 @@
-/**
- * eslint-disable @typescript-eslint/no-explicit-any
- *
- * @format
- */
+/** @format */
 
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import Navbar from "@/components/layout/Navbar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
 	Dialog,
 	DialogContent,
@@ -20,6 +9,11 @@ import {
 	DialogTitle,
 	DialogFooter,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
 	Select,
 	SelectContent,
@@ -27,17 +21,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import {
-	ArrowLeft,
-	Mail,
-	User,
-	Calendar,
-	Shield,
-	Phone,
-	Trash2,
-} from "lucide-react";
-import axiosInstance from "@/api/axios";
-import toast, { Toaster } from "react-hot-toast";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -47,57 +30,73 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+	Mail,
+	User,
+	Calendar,
+	Shield,
+	Phone,
+	Trash2,
+	AlertCircle,
+} from "lucide-react";
+import axiosInstance from "@/api/axios";
+import toast from "react-hot-toast";
 
-interface UserDetails {
+interface UserDetailsData {
 	_id: string;
 	name: string;
 	email: string;
 	role: "Admin" | "Developer" | "Viewer";
-	phone?: string;
-	username?: string;
+	phone: string;
+	username: string;
 	joinDate: string;
 	status: "active" | "inactive";
 }
 
-const UserDetailsPage = () => {
-	const { userId } = useParams<{ userId: string }>();
-	const navigate = useNavigate();
-	const [user, setUser] = useState<UserDetails | null>(null);
+interface UserDetailsModalProps {
+	open: boolean;
+	userId: string;
+	onOpenChange: (open: boolean) => void;
+	onUserUpdated?: () => void;
+}
+
+const UserDetailsModal = ({
+	open,
+	userId,
+	onOpenChange,
+	onUserUpdated,
+}: UserDetailsModalProps) => {
+	const [user, setUser] = useState<UserDetailsData | null>(null);
 	const [loading, setLoading] = useState(true);
-	const [editDialogOpen, setEditDialogOpen] = useState(false);
-	const [isSaving, setIsSaving] = useState(false);
-	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-	const [isDeleting, setIsDeleting] = useState(false);
-	const [editFormData, setEditFormData] = useState({
-		name: "",
-		email: "",
-		phone: "",
-		username: "",
-		status: "active" as "active" | "inactive",
-		role: "1",
-	});
+	const [isEditing, setIsEditing] = useState(false);
+	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+	const [editFormData, setEditFormData] = useState<Partial<UserDetailsData>>(
+		{}
+	);
 
 	useEffect(() => {
-		fetchUserDetails();
-	}, [userId]);
+		if (open && userId) {
+			fetchUserDetails();
+		}
+	}, [open, userId]);
 
 	const fetchUserDetails = async () => {
 		try {
 			setLoading(true);
 			const response = await axiosInstance.get(`/auth/user/${userId}`);
+
 			if (response.data.success) {
-				// Format the response to match our interface
 				const userData = response.data.user;
-				const formattedUser: UserDetails = {
+
+				// Get the role directly - backend already converts to Admin/Developer/Viewer
+				const role =
+					(userData.role as "Admin" | "Developer" | "Viewer") || "Developer";
+
+				const formattedUser: UserDetailsData = {
 					_id: userData._id,
 					name: userData.name,
 					email: userData.email,
-					role:
-						userData.role === 2
-							? "Admin"
-							: userData.role === 1
-							? "Developer"
-							: "Viewer",
+					role: role,
 					phone: userData.phone || "N/A",
 					username: userData.username || "N/A",
 					joinDate: userData.createdAt
@@ -105,460 +104,457 @@ const UserDetailsPage = () => {
 						: new Date().toISOString().split("T")[0],
 					status: userData.status || "active",
 				};
+
 				setUser(formattedUser);
-				// Initialize edit form with current user data
-				setEditFormData({
-					name: userData.name,
-					email: userData.email,
-					phone: userData.phone || "",
-					username: userData.username || "",
-					status: userData.status || "active",
-					role: String(userData.role),
-				});
+				setEditFormData(formattedUser);
 			}
-		} catch (err: any) {
-			console.error("Error fetching user details:", err);
-			toast.error(
-				err.response?.data?.message || "Failed to fetch user details"
-			);
-			navigate("/admin");
+		} catch (error: any) {
+			console.error("Error fetching user details:", error);
+			toast.error("Failed to fetch user details");
 		} finally {
 			setLoading(false);
 		}
 	};
 
-	const getRoleColor = (role: string) => {
-		switch (role) {
-			case "Admin":
-				return "bg-red-500";
-			case "Developer":
-				return "bg-blue-500";
-			case "Viewer":
-				return "bg-gray-500";
-			default:
-				return "bg-purple-500";
-		}
-	};
-
-	const handleEditClick = () => {
-		setEditDialogOpen(true);
-	};
-
-	const handleEditFormChange = (
-		field: string,
-		value: string | "active" | "inactive"
-	) => {
-		setEditFormData({ ...editFormData, [field]: value });
+	const handleEditChange = (field: string, value: string) => {
+		setEditFormData((prev) => ({
+			...prev,
+			[field]: value,
+		}));
 	};
 
 	const handleSaveChanges = async () => {
 		if (!user) return;
 
-		// Validation
-		if (
-			!editFormData.name.trim() ||
-			!editFormData.email.trim() ||
-			!editFormData.username.trim()
-		) {
-			toast.error("Please fill in all required fields");
-			return;
-		}
-
-		setIsSaving(true);
 		try {
-			const updatePayload = {
-				name: editFormData.name,
-				email: editFormData.email,
-				phone: editFormData.phone,
-				username: editFormData.username,
-				status: editFormData.status,
-				role: parseInt(editFormData.role),
-			};
-
+			const roleToSend = editFormData.role || user.role;
 			const response = await axiosInstance.put(
 				`/auth/admin/users/${user._id}`,
-				updatePayload
+				{
+					name: editFormData.name || user.name,
+					email: editFormData.email || user.email,
+					phone: editFormData.phone || user.phone,
+					username: editFormData.username || user.username,
+					role: roleToSend,
+					status: editFormData.status || user.status,
+				}
 			);
 
 			if (response.data.success) {
-				toast.success("User details updated successfully");
-				setEditDialogOpen(false);
-				// Refresh user details
-				fetchUserDetails();
+				// Backend returns role as string (Admin/Developer/Viewer)
+				const role =
+					(response.data.user.role as "Admin" | "Developer" | "Viewer") ||
+					"Developer";
+
+				const updatedUser: UserDetailsData = {
+					_id: response.data.user._id,
+					name: response.data.user.name,
+					email: response.data.user.email,
+					role: role,
+					phone: response.data.user.phone || "N/A",
+					username: response.data.user.username || "N/A",
+					joinDate: response.data.user.joinDate,
+					status: response.data.user.status as "active" | "inactive",
+				};
+
+				setUser(updatedUser);
+				setEditFormData(updatedUser);
+				setIsEditing(false);
+				toast.success("User updated successfully");
+				onUserUpdated?.();
 			}
-		} catch (err: any) {
-			console.error("Error updating user:", err);
-			toast.error(
-				err.response?.data?.message || "Failed to update user details"
-			);
-		} finally {
-			setIsSaving(false);
+		} catch (error: any) {
+			console.error("Error updating user:", error);
+			toast.error(error.response?.data?.message || "Failed to update user");
 		}
 	};
 
 	const handleDeleteUser = async () => {
 		if (!user) return;
 
-		setIsDeleting(true);
 		try {
-			const response = await axiosInstance.delete(
-				`/auth/admin/users/${user._id}`
-			);
-
-			if (response.data.success) {
-				toast.success("User deleted successfully");
-				setDeleteDialogOpen(false);
-				// Navigate back to admin page after deletion
-				setTimeout(() => navigate("/admin"), 1500);
-			}
-		} catch (err: any) {
-			console.error("Error deleting user:", err);
-			toast.error(err.response?.data?.message || "Failed to delete user");
-		} finally {
-			setIsDeleting(false);
+			await axiosInstance.delete(`/auth/admin/users/${user._id}`);
+			toast.success("User deleted successfully");
+			setShowDeleteConfirm(false);
+			onOpenChange(false);
+			onUserUpdated?.();
+		} catch (error: any) {
+			console.error("Error deleting user:", error);
+			toast.error(error.response?.data?.message || "Failed to delete user");
 		}
 	};
 
-	if (loading) {
-		return (
-			<div className="min-h-screen bg-gradient-to-br from-background via-purple-50/20 to-background">
-				<Navbar />
-				<div className="flex items-center justify-center h-screen">
-					<p className="text-muted-foreground">Loading user details...</p>
-				</div>
-			</div>
-		);
-	}
+	const getRoleColor = (role: string) => {
+		switch (role) {
+			case "Admin":
+				return "bg-purple-500/80";
+			case "Developer":
+				return "bg-blue-500/80";
+			case "Viewer":
+				return "bg-gray-500/80";
+			default:
+				return "bg-blue-500/80";
+		}
+	};
 
-	if (!user) {
-		return (
-			<div className="min-h-screen bg-gradient-to-br from-background via-purple-50/20 to-background">
-				<Navbar />
-				<div className="flex items-center justify-center h-screen">
-					<p className="text-muted-foreground">User not found</p>
-				</div>
-			</div>
-		);
-	}
+	const getStatusColor = (status: string) => {
+		return status === "active" ? "bg-green-500/80" : "bg-red-500/80";
+	};
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-background via-purple-50/20 to-background">
-			<Toaster position="top-right" />
-			<Navbar />
+		<>
+			<Dialog open={open} onOpenChange={onOpenChange}>
+				<DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-gradient-to-b from-slate-900 to-slate-950 backdrop-blur-xl border-cyan-500/30 shadow-2xl shadow-cyan-500/20">
+					<DialogHeader className="border-b border-cyan-500/10 pb-4">
+						<DialogTitle className="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+							User Details
+						</DialogTitle>
+						<DialogDescription className="text-cyan-300/70 mt-1">
+							Manage and view user information
+						</DialogDescription>
+					</DialogHeader>
 
-			<div className="container mx-auto p-8 max-w-2xl">
-				{/* Back Button */}
-				<Button
-					variant="outline"
-					onClick={() => navigate("/admin")}
-					className="mb-6">
-					<ArrowLeft className="w-4 h-4 mr-2" />
-					Back to Users
-				</Button>
-
-				{/* User Details Card */}
-				<Card className="glass-card border-border/50">
-					<CardHeader className="bg-gradient-to-r from-purple-500/10 to-blue-500/10">
-						<div className="flex items-start justify-between">
-							<div>
-								<CardTitle className="text-3xl">{user.name}</CardTitle>
-								<p className="text-muted-foreground mt-1">{user.email}</p>
-							</div>
-							<Badge
-								className={`${getRoleColor(
-									user.role
-								)} text-white text-lg px-4 py-2`}>
-								{user.role}
-							</Badge>
+					{loading ? (
+						<div className="flex flex-col items-center justify-center py-16">
+							<div className="w-12 h-12 rounded-full border-2 border-cyan-500/30 border-t-cyan-500 animate-spin mb-4"></div>
+							<p className="text-cyan-300/60">Loading user details...</p>
 						</div>
-					</CardHeader>
-
-					<CardContent className="pt-8">
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-							{/* Left Column - Contact Information */}
-							<div className="space-y-6">
-								<h3 className="text-lg font-semibold flex items-center gap-2">
-									<Shield className="w-5 h-5 text-purple-500" />
-									Contact Information
-								</h3>
-
-								<div className="space-y-4">
-									{/* Email */}
-									<div className="p-4 rounded-lg bg-secondary/30 border border-border/50 h-[90px] flex flex-col items-center justify-center text-center">
-										<div className="flex items-center justify-center gap-2 mb-1">
-											<Mail className="w-5 h-5 text-blue-500" />
-											<span className="text-sm text-muted-foreground">
-												Email
-											</span>
-										</div>
-										<p className="font-medium break-all">{user.email}</p>
-									</div>
-
-									{/* Phone */}
-									<div className="p-4 rounded-lg bg-secondary/30 border border-border/50 h-[90px] flex flex-col items-center justify-center text-center">
-										<div className="flex items-center justify-center gap-2 mb-1">
-											<Phone className="w-5 h-5 text-green-500" />
-											<span className="text-sm text-muted-foreground">
-												Phone
-											</span>
-										</div>
-										<p className="font-medium">{user.phone}</p>
-									</div>
-
-									{/* Username */}
-									<div className="p-4 rounded-lg bg-secondary/30 border border-border/50 h-[90px] flex flex-col items-center justify-center text-center">
-										<div className="flex items-center justify-center gap-2 mb-1">
-											<User className="w-5 h-5 text-orange-500" />
-											<span className="text-sm text-muted-foreground">
-												Username
-											</span>
-										</div>
-										<p className="font-medium">{user.username}</p>
-									</div>
+					) : user ? (
+						<div className="space-y-6 py-6">
+							{/* User Info Card */}
+							<div className="bg-slate-800/50 border border-cyan-500/20 rounded-xl overflow-hidden hover:border-cyan-500/30 transition-colors">
+								<div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 px-6 py-4 border-b border-cyan-500/10">
+									<h3 className="text-lg font-semibold text-cyan-300 flex items-center gap-2">
+										<User className="w-5 h-5" />
+										Basic Information
+									</h3>
 								</div>
-							</div>
-
-							{/* Right Column - Account Information */}
-							<div className="space-y-6">
-								<h3 className="text-lg font-semibold flex items-center gap-2">
-									<Shield className="w-5 h-5 text-purple-500" />
-									Account Information
-								</h3>
-
-								<div className="space-y-4">
-									{/* Join Date */}
-									<div className="p-4 rounded-lg bg-secondary/30 border border-border/50 h-[90px] flex flex-col items-center justify-center text-center">
-										<div className="flex items-center justify-center gap-2 mb-1">
-											<Calendar className="w-5 h-5 text-indigo-500" />
-											<span className="text-sm text-muted-foreground">
-												Join Date
-											</span>
-										</div>
-										<p className="font-medium">{user.joinDate}</p>
-									</div>
-
-									{/* Status */}
-									<div className="p-4 rounded-lg bg-secondary/30 border border-border/50 h-[90px] flex flex-col items-center justify-center text-center">
-										<div className="flex items-center justify-center gap-2 mb-1">
-											<Shield className="w-5 h-5 text-green-500" />
-											<span className="text-sm text-muted-foreground">
-												Status
-											</span>
-										</div>
-										<Badge className="bg-green-500 text-white capitalize mt-1">
-											{user.status}
-										</Badge>
-									</div>
-
-									{/* Role Information */}
-									<div className="p-4 rounded-lg bg-secondary/30 border border-border/50 h-[90px] flex flex-col items-center justify-center text-center">
-										<div className="flex items-center justify-center gap-2 mb-1">
-											<Shield className="w-5 h-5 text-purple-500" />
-											<span className="text-sm text-muted-foreground">
-												Role
-											</span>
-										</div>
+								<div className="px-6 py-4">
+									<div className="grid grid-cols-2 gap-4">
+										{/* Name */}
 										<div>
-											<p className="font-medium">{user.role}</p>
-											<p className="text-xs text-muted-foreground mt-1 line-clamp-1">
-												{user.role === "Admin" &&
-													"Full system access and management capabilities"}
-												{user.role === "Developer" &&
-													"Development and deployment access"}
-												{user.role === "Viewer" &&
-													"Read-only access to resources"}
-											</p>
+											{isEditing ? (
+												<>
+													<Label className="text-cyan-300/70 text-xs font-semibold mb-2">
+														Full Name
+													</Label>
+													<Input
+														value={editFormData.name || ""}
+														onChange={(e) =>
+															handleEditChange("name", e.target.value)
+														}
+														className="bg-slate-700/60 border-cyan-500/30 text-white placeholder-cyan-300/30 focus:border-cyan-500/60 h-9"
+													/>
+												</>
+											) : (
+												<>
+													<p className="text-cyan-300/70 text-xs font-semibold mb-1">
+														Full Name
+													</p>
+													<p className="text-white font-semibold text-sm">
+														{user.name}
+													</p>
+												</>
+											)}
+										</div>
+
+										{/* Email */}
+										<div>
+											{isEditing ? (
+												<>
+													<Label className="text-cyan-300/70 text-xs font-semibold mb-2">
+														Email Address
+													</Label>
+													<Input
+														value={editFormData.email || ""}
+														onChange={(e) =>
+															handleEditChange("email", e.target.value)
+														}
+														className="bg-slate-700/60 border-cyan-500/30 text-white placeholder-cyan-300/30 focus:border-cyan-500/60 h-9"
+													/>
+												</>
+											) : (
+												<>
+													<p className="text-cyan-300/70 text-xs font-semibold mb-1">
+														Email Address
+													</p>
+													<p className="text-white text-sm break-all">
+														{user.email}
+													</p>
+												</>
+											)}
+										</div>
+
+										{/* Username */}
+										<div>
+											{isEditing ? (
+												<>
+													<Label className="text-cyan-300/70 text-xs font-semibold mb-2">
+														Username
+													</Label>
+													<Input
+														value={editFormData.username || ""}
+														onChange={(e) =>
+															handleEditChange("username", e.target.value)
+														}
+														className="bg-slate-700/60 border-cyan-500/30 text-white placeholder-cyan-300/30 focus:border-cyan-500/60 h-9"
+													/>
+												</>
+											) : (
+												<>
+													<p className="text-cyan-300/70 text-xs font-semibold mb-1">
+														Username
+													</p>
+													<p className="text-white font-semibold text-sm">
+														{user.username}
+													</p>
+												</>
+											)}
+										</div>
+
+										{/* Phone */}
+										<div>
+											{isEditing ? (
+												<>
+													<Label className="text-cyan-300/70 text-xs font-semibold mb-2">
+														Phone Number
+													</Label>
+													<Input
+														value={editFormData.phone || ""}
+														onChange={(e) =>
+															handleEditChange("phone", e.target.value)
+														}
+														className="bg-slate-700/60 border-cyan-500/30 text-white placeholder-cyan-300/30 focus:border-cyan-500/60 h-9"
+													/>
+												</>
+											) : (
+												<>
+													<p className="text-cyan-300/70 text-xs font-semibold mb-1">
+														Phone Number
+													</p>
+													<p className="text-white text-sm">{user.phone}</p>
+												</>
+											)}
 										</div>
 									</div>
 								</div>
 							</div>
-						</div>
 
-						{/* Action Buttons */}
-						<div className="mt-8 pt-8 border-t border-border/50 flex gap-3">
-							<Button variant="outline" onClick={() => navigate("/admin")}>
-								Back
-							</Button>
-							<Button
-								variant="destructive"
-								onClick={() => setDeleteDialogOpen(true)}
-								className="gap-2">
-								<Trash2 className="w-4 h-4" />
-								Delete User
-							</Button>
-							<Button
-								onClick={handleEditClick}
-								className="ml-auto gradient-purple text-white">
-								Edit User
-							</Button>
-						</div>
-					</CardContent>
-				</Card>
+							{/* Role & Status Card */}
+							<div className="bg-slate-800/50 border border-cyan-500/20 rounded-xl overflow-hidden hover:border-cyan-500/30 transition-colors">
+								<div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 px-6 py-4 border-b border-cyan-500/10">
+									<h3 className="text-lg font-semibold text-cyan-300 flex items-center gap-2">
+										<Shield className="w-5 h-5" />
+										Role & Status
+									</h3>
+								</div>
+								<div className="px-6 py-4">
+									<div className="grid grid-cols-2 gap-4">
+										{/* Role */}
+										<div>
+											{isEditing ? (
+												<>
+													<Label className="text-cyan-300/70 text-xs font-semibold mb-2">
+														User Role
+													</Label>
+													<Select
+														value={editFormData.role || user.role}
+														onValueChange={(value) =>
+															handleEditChange(
+																"role",
+																value as "Admin" | "Developer" | "Viewer"
+															)
+														}>
+														<SelectTrigger className="bg-slate-700/60 border-cyan-500/30 text-white focus:border-cyan-500/60 h-9">
+															<SelectValue />
+														</SelectTrigger>
+														<SelectContent className="bg-slate-800 border-cyan-500/30">
+															<SelectItem value="Admin">Admin</SelectItem>
+															<SelectItem value="Developer">
+																Developer
+															</SelectItem>
+															<SelectItem value="Viewer">Viewer</SelectItem>
+														</SelectContent>
+													</Select>
+												</>
+											) : (
+												<>
+													<p className="text-cyan-300/70 text-xs font-semibold mb-2">
+														User Role
+													</p>
+													<Badge
+														className={`${getRoleColor(
+															user.role
+														)} text-white px-3 py-1 text-xs font-semibold inline-block`}>
+														{user.role}
+													</Badge>
+												</>
+											)}
+										</div>
 
-				{/* Edit User Dialog */}
-				<Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-					<DialogContent className="sm:max-w-[500px]">
-						<DialogHeader>
-							<DialogTitle>Edit User Details</DialogTitle>
-							<DialogDescription>
-								Update the user's information and settings. Changes will be
-								saved to the database.
-							</DialogDescription>
-						</DialogHeader>
-
-						<div className="space-y-4 py-4">
-							{/* Name */}
-							<div className="space-y-2">
-								<Label htmlFor="name" className="text-gray-700 font-medium">
-									Name <span className="text-red-500">*</span>
-								</Label>
-								<Input
-									id="name"
-									placeholder="Enter user name"
-									value={editFormData.name}
-									onChange={(e) => handleEditFormChange("name", e.target.value)}
-									className="h-10"
-								/>
+										{/* Status */}
+										<div>
+											{isEditing ? (
+												<>
+													<Label className="text-cyan-300/70 text-xs font-semibold mb-2">
+														Account Status
+													</Label>
+													<Select
+														value={editFormData.status || user.status}
+														onValueChange={(value) =>
+															handleEditChange(
+																"status",
+																value as "active" | "inactive"
+															)
+														}>
+														<SelectTrigger className="bg-slate-700/60 border-cyan-500/30 text-white focus:border-cyan-500/60 h-9">
+															<SelectValue />
+														</SelectTrigger>
+														<SelectContent className="bg-slate-800 border-cyan-500/30">
+															<SelectItem value="active">Active</SelectItem>
+															<SelectItem value="inactive">Inactive</SelectItem>
+														</SelectContent>
+													</Select>
+												</>
+											) : (
+												<>
+													<p className="text-cyan-300/70 text-xs font-semibold mb-2">
+														Account Status
+													</p>
+													<Badge
+														className={`${getStatusColor(
+															user.status
+														)} text-white px-3 py-1 text-xs font-semibold inline-flex items-center gap-1`}>
+														<span
+															className={`w-2 h-2 rounded-full ${
+																user.status === "active"
+																	? "bg-green-300"
+																	: "bg-red-300"
+															}`}></span>
+														{user.status === "active" ? "Active" : "Inactive"}
+													</Badge>
+												</>
+											)}
+										</div>
+									</div>
+								</div>
 							</div>
 
-							{/* Email */}
-							<div className="space-y-2">
-								<Label htmlFor="email" className="text-gray-700 font-medium">
-									Email <span className="text-red-500">*</span>
-								</Label>
-								<Input
-									id="email"
-									type="email"
-									placeholder="Enter email"
-									value={editFormData.email}
-									onChange={(e) =>
-										handleEditFormChange("email", e.target.value)
-									}
-									className="h-10"
-								/>
-							</div>
-
-							{/* Username */}
-							<div className="space-y-2">
-								<Label htmlFor="username" className="text-gray-700 font-medium">
-									Username <span className="text-red-500">*</span>
-								</Label>
-								<Input
-									id="username"
-									placeholder="Enter username"
-									value={editFormData.username}
-									onChange={(e) =>
-										handleEditFormChange("username", e.target.value)
-									}
-									className="h-10"
-								/>
-							</div>
-
-							{/* Phone */}
-							<div className="space-y-2">
-								<Label htmlFor="phone" className="text-gray-700 font-medium">
-									Phone
-								</Label>
-								<Input
-									id="phone"
-									placeholder="Enter phone number"
-									value={editFormData.phone}
-									onChange={(e) =>
-										handleEditFormChange("phone", e.target.value)
-									}
-									className="h-10"
-								/>
-							</div>
-
-							{/* Status */}
-							<div className="space-y-2">
-								<Label htmlFor="status" className="text-gray-700 font-medium">
-									Status <span className="text-red-500">*</span>
-								</Label>
-								<Select
-									value={editFormData.status}
-									onValueChange={(value) =>
-										handleEditFormChange(
-											"status",
-											value as "active" | "inactive"
-										)
-									}>
-									<SelectTrigger id="status" className="h-10">
-										<SelectValue placeholder="Select status" />
-									</SelectTrigger>
-									<SelectContent>
-										<SelectItem value="active">Active</SelectItem>
-										<SelectItem value="inactive">Inactive</SelectItem>
-									</SelectContent>
-								</Select>
-							</div>
-
-							{/* Role */}
-							<div className="space-y-2">
-								<Label htmlFor="role" className="text-gray-700 font-medium">
-									Role <span className="text-red-500">*</span>
-								</Label>
-								<Select
-									value={editFormData.role}
-									onValueChange={(value) =>
-										handleEditFormChange("role", value)
-									}>
-									<SelectTrigger id="role" className="h-10">
-										<SelectValue placeholder="Select role" />
-									</SelectTrigger>
-									<SelectContent>
-										<SelectItem value="1">Developer</SelectItem>
-										<SelectItem value="2">Admin</SelectItem>
-										<SelectItem value="3">Viewer</SelectItem>
-									</SelectContent>
-								</Select>
+							{/* Metadata Card */}
+							<div className="bg-slate-800/50 border border-cyan-500/20 rounded-xl overflow-hidden hover:border-cyan-500/30 transition-colors">
+								<div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 px-6 py-4 border-b border-cyan-500/10">
+									<h3 className="text-lg font-semibold text-cyan-300 flex items-center gap-2">
+										<Calendar className="w-5 h-5" />
+										Account Information
+									</h3>
+								</div>
+								<div className="px-6 py-4 space-y-3">
+									<div className="flex items-center justify-between p-4 rounded-lg bg-slate-700/20 border border-cyan-500/10 hover:bg-slate-700/30 transition-colors">
+										<span className="text-cyan-300 font-semibold flex items-center gap-2">
+											<Calendar className="w-4 h-4" />
+											Join Date
+										</span>
+										<span className="text-cyan-100 font-mono">
+											{user.joinDate}
+										</span>
+									</div>
+									<div className="flex items-center justify-between p-4 rounded-lg bg-slate-700/20 border border-cyan-500/10 hover:bg-slate-700/30 transition-colors">
+										<span className="text-cyan-300 font-semibold">User ID</span>
+										<span className="text-cyan-100 text-sm font-mono break-all max-w-xs">
+											{user._id}
+										</span>
+									</div>
+								</div>
 							</div>
 						</div>
-
-						<DialogFooter>
-							<Button
-								variant="outline"
-								onClick={() => setEditDialogOpen(false)}
-								disabled={isSaving}>
-								Cancel
-							</Button>
-							<Button
-								onClick={handleSaveChanges}
-								disabled={isSaving}
-								className="gradient-purple text-white">
-								{isSaving ? "Saving..." : "Save Changes"}
-							</Button>
-						</DialogFooter>
-					</DialogContent>
-				</Dialog>
-
-				{/* Delete Confirmation Dialog */}
-				<AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-					<AlertDialogContent>
-						<AlertDialogHeader>
-							<AlertDialogTitle>Delete User</AlertDialogTitle>
-							<AlertDialogDescription>
-								Are you sure you want to delete {user?.name}? This action cannot
-								be undone and the user will be permanently removed from the
-								system.
-							</AlertDialogDescription>
-						</AlertDialogHeader>
-						<div className="flex gap-3 justify-end">
-							<AlertDialogCancel disabled={isDeleting}>
-								Cancel
-							</AlertDialogCancel>
-							<AlertDialogAction
-								onClick={handleDeleteUser}
-								disabled={isDeleting}
-								className="bg-red-600 hover:bg-red-700">
-								{isDeleting ? "Deleting..." : "Delete"}
-							</AlertDialogAction>
+					) : (
+						<div className="text-center py-12">
+							<div className="text-4xl mb-4">⚠️</div>
+							<p className="text-red-400 font-semibold">
+								Failed to load user details
+							</p>
 						</div>
-					</AlertDialogContent>
-				</AlertDialog>
-			</div>
-		</div>
+					)}
+
+					<DialogFooter className="border-t border-cyan-500/10 mt-6 pt-4 flex gap-3 justify-end">
+						{isEditing ? (
+							<>
+								<Button
+									variant="outline"
+									onClick={() => {
+										setIsEditing(false);
+										setEditFormData(user || {});
+									}}
+									className="border-cyan-500/30 hover:bg-cyan-500/10 text-cyan-300 font-semibold">
+									Cancel
+								</Button>
+								<Button
+									onClick={handleSaveChanges}
+									className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-semibold shadow-lg shadow-cyan-500/30">
+									Save Changes
+								</Button>
+							</>
+						) : (
+							<>
+								<Button
+									variant="destructive"
+									onClick={() => setShowDeleteConfirm(true)}
+									className="gap-2 bg-red-600/80 hover:bg-red-700 text-white font-semibold"
+									disabled={loading}>
+									<Trash2 className="w-4 h-4" />
+									Delete User
+								</Button>
+								<Button
+									onClick={() => setIsEditing(true)}
+									className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold shadow-lg shadow-purple-500/30"
+									disabled={loading}>
+									Edit User
+								</Button>
+								<Button
+									variant="outline"
+									onClick={() => onOpenChange(false)}
+									className="border-cyan-500/30 hover:bg-cyan-500/10 text-cyan-300 font-semibold">
+									Close
+								</Button>
+							</>
+						)}
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			{/* Delete Confirmation Dialog */}
+			<AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+				<AlertDialogContent className="bg-gradient-to-b from-slate-900 to-slate-950 backdrop-blur-xl border-red-500/30 shadow-2xl shadow-red-500/20">
+					<AlertDialogHeader className="border-b border-red-500/10 pb-4">
+						<AlertDialogTitle className="text-2xl font-bold text-red-400 flex items-center gap-2">
+							<AlertCircle className="w-6 h-6" />
+							Delete User
+						</AlertDialogTitle>
+						<AlertDialogDescription className="text-cyan-300/70 mt-2 text-base">
+							Are you sure you want to permanently delete{" "}
+							<span className="font-semibold text-cyan-300">{user?.name}</span>?
+							This action cannot be undone.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 my-4">
+						<p className="text-red-300 text-sm font-semibold">
+							⚠️ Warning: All associated data will be permanently removed.
+						</p>
+					</div>
+					<div className="flex gap-3 justify-end pt-2">
+						<AlertDialogCancel className="border-cyan-500/30 hover:bg-cyan-500/10 text-cyan-300 font-semibold">
+							Cancel
+						</AlertDialogCancel>
+						<AlertDialogAction
+							onClick={handleDeleteUser}
+							className="bg-red-600 hover:bg-red-700 text-white font-semibold shadow-lg shadow-red-500/30">
+							Delete User
+						</AlertDialogAction>
+					</div>
+				</AlertDialogContent>
+			</AlertDialog>
+		</>
 	);
 };
 
-export default UserDetailsPage;
+export default UserDetailsModal;

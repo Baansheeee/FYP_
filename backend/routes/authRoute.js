@@ -1,22 +1,28 @@
+/** @format */
+
 const express = require("express");
 const {
-  registerHandler,
-  loginHandler,
-  forgotHandler,
-  adminLoginHandler,
-  registerAdminHandler,
-  getTotalUsers,
-  updateProfile,
-  getUserById,
-  adminCreateUser,
-  adminGetAllUsers,
-  adminUpdateUser,
-  adminDeleteUser,
-  testHandler,
-  googleLoginHandler,
-  logoutHandler
+	registerHandler,
+	loginHandler,
+	forgotHandler,
+	adminLoginHandler,
+	registerAdminHandler,
+	getTotalUsers,
+	updateProfile,
+	getUserById,
+	adminCreateUser,
+	adminGetAllUsers,
+	adminUpdateUser,
+	adminDeleteUser,
+	testHandler,
+	googleLoginHandler,
+	logoutHandler,
 } = require("../controllers/authController");
-const { requireSignIn, isUser, isAdmin } = require("../middlewares/authmiddleware");
+const {
+	requireSignIn,
+	isUser,
+	isAdmin,
+} = require("../middlewares/authmiddleware");
 
 const router = express.Router();
 
@@ -33,7 +39,7 @@ router.post("/forgot", forgotHandler);
 
 // Protected route: check if logged in (user)
 router.get("/user-auth", requireSignIn, isUser, (req, res) => {
-  res.status(200).json({ ok: true, message: "User authorized" });
+	res.status(200).json({ ok: true, message: "User authorized" });
 });
 
 // Google login
@@ -58,7 +64,7 @@ router.get("/adminRoute", requireSignIn, isAdmin, testHandler);
 
 // Check if logged in as admin
 router.get("/admin-auth", requireSignIn, isAdmin, (req, res) => {
-  res.status(200).json({ ok: true, message: "Admin authorized" });
+	res.status(200).json({ ok: true, message: "Admin authorized" });
 });
 
 // Get all users (admin only)

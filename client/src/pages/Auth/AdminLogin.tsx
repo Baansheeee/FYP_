@@ -94,7 +94,21 @@ const AdminLogin = () => {
 			// normalize response: admin responses include `admin`, user responses include `user`
 			const userObj = data.admin || data.user || {};
 			const token = data.token || userObj.token;
-			const role = Number(userObj.role) || (isAdmin ? 2 : 1);
+
+			// Convert role string to numeric: "Admin"→2, else→1
+			const roleValue = userObj.role || (isAdmin ? 2 : 1);
+			const roleMap: { [key: string]: 1 | 2 } = {
+				Admin: 2,
+				Developer: 1,
+				Viewer: 1,
+			};
+			const role: 1 | 2 =
+				typeof roleValue === "string"
+					? roleMap[roleValue] || 1
+					: roleValue === 2
+					? 2
+					: 1;
+
 			const validRole = role === 2 ? 2 : 1;
 			const userName = userObj.name || (isAdmin ? name : undefined);
 			const userEmail = userObj.email || (isAdmin ? undefined : email);

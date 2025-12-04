@@ -103,13 +103,15 @@ const EducationTab = () => {
 			) : (
 				// Lectures List View
 				<>
-					<Card className="glass-card border-border/50">
-						<CardHeader>
+					<Card className="bg-slate-800/40 backdrop-blur-xl border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 shadow-2xl">
+						<CardHeader className="border-b border-cyan-500/10">
 							<div className="flex items-center justify-between">
 								<div>
-									<CardTitle className="text-2xl">Lecture Management</CardTitle>
-									<p className="text-sm text-muted-foreground mt-2">
-										Manage all lectures and course materials
+									<CardTitle className="text-2xl bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+										Lecture Management
+									</CardTitle>
+									<p className="text-sm text-cyan-300/60 mt-2">
+										📚 Manage all lectures and course materials
 									</p>
 								</div>
 								<Button
@@ -117,7 +119,7 @@ const EducationTab = () => {
 										setSelectedLecture(null);
 										setShowLectureForm(true);
 									}}
-									className="gradient-purple text-white hover:opacity-90"
+									className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-600 hover:to-blue-600 shadow-lg shadow-cyan-500/50 transition-all duration-300"
 									size="lg">
 									<Plus className="mr-2 h-4 w-4" />
 									Add Lecture
@@ -126,24 +128,32 @@ const EducationTab = () => {
 						</CardHeader>
 					</Card>
 					{/* Lectures List */}
-					<Card className="glass-card border-border/50">
-						<CardHeader>
-							<CardTitle>All Lectures</CardTitle>
-							<p className="text-sm text-muted-foreground mt-1">
-								Total: {allLectures.length} lectures
+					<Card className="bg-slate-800/40 backdrop-blur-xl border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 shadow-2xl">
+						<CardHeader className="border-b border-cyan-500/10">
+							<CardTitle className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+								All Lectures
+							</CardTitle>
+							<p className="text-sm text-cyan-300/60 mt-2">
+								📖 Total:{" "}
+								<span className="text-cyan-300 font-bold">
+									{allLectures.length}
+								</span>{" "}
+								lectures
 							</p>
 						</CardHeader>
-						<CardContent>
+						<CardContent className="pt-6">
 							<div className="space-y-3">
 								{allLecturesLoading ? (
 									<div className="flex items-center justify-center py-12">
-										<Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+										<Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
 									</div>
 								) : allLectures.length === 0 ? (
 									<div className="text-center py-12">
-										<BookOpen className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
-										<h3 className="text-lg font-semibold">No lectures yet</h3>
-										<p className="text-muted-foreground mt-2">
+										<BookOpen className="h-12 w-12 text-cyan-500/50 mx-auto mb-3" />
+										<h3 className="text-lg font-semibold text-cyan-300">
+											No lectures yet
+										</h3>
+										<p className="text-cyan-300/60 mt-2">
 											Create your first lecture to get started
 										</p>
 									</div>
@@ -151,31 +161,31 @@ const EducationTab = () => {
 									allLectures.map((lecture) => (
 										<div
 											key={lecture._id}
-											className="p-4 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors border border-border/50">
+											className="p-4 rounded-xl bg-gradient-to-r from-slate-700/40 to-slate-600/30 hover:from-cyan-500/10 hover:to-blue-500/10 transition-all duration-300 border border-cyan-500/10 hover:border-cyan-500/30 group">
 											<div className="flex items-start justify-between gap-4">
 												<div className="flex-1">
-													<h4 className="font-semibold text-lg">
+													<h4 className="font-semibold text-lg text-cyan-300 group-hover:text-cyan-200 transition-colors">
 														{lecture.title}
 													</h4>
 													{lecture.description && (
-														<p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+														<p className="text-sm text-cyan-300/60 mt-1 line-clamp-2">
 															{lecture.description}
 														</p>
 													)}
 													<div className="flex flex-wrap gap-2 mt-3">
-														<Badge variant="outline" className="text-xs">
+														<Badge className="text-xs bg-cyan-500/20 border-cyan-500/30 text-cyan-300">
 															📁 {lecture.fileType || "File"}
 														</Badge>
 														{lecture.duration > 0 && (
-															<Badge variant="outline" className="text-xs">
+															<Badge className="text-xs bg-cyan-500/20 border-cyan-500/30 text-cyan-300">
 																⏱️ {lecture.duration} min
 															</Badge>
 														)}
-														<Badge variant="outline" className="text-xs">
+														<Badge className="text-xs bg-cyan-500/20 border-cyan-500/30 text-cyan-300">
 															📅{" "}
 															{new Date(lecture.createdAt).toLocaleDateString()}
 														</Badge>
-														<Badge variant="outline" className="text-xs">
+														<Badge className="text-xs bg-cyan-500/20 border-cyan-500/30 text-cyan-300">
 															📄 {lecture.fileName}
 														</Badge>
 													</div>
@@ -188,8 +198,8 @@ const EducationTab = () => {
 															setSelectedLecture(lecture);
 															setShowLectureForm(true);
 														}}
-														className="hover:bg-gray-800">
-														<Edit2 className="h-4 w-4 mr-2 text-purple-500" />
+														className="border-cyan-500/30 hover:border-cyan-500/60 hover:bg-cyan-500/10 text-cyan-300">
+														<Edit2 className="h-4 w-4 mr-2" />
 														Edit
 													</Button>
 													<Button
@@ -214,16 +224,20 @@ const EducationTab = () => {
 			<AlertDialog
 				open={!!deleteConfirmationId}
 				onOpenChange={(open) => !open && setDeleteConfirmationId(null)}>
-				<AlertDialogContent>
+				<AlertDialogContent className="bg-slate-900/95 border-cyan-500/30">
 					<AlertDialogHeader>
-						<AlertDialogTitle>Delete Lecture</AlertDialogTitle>
-						<AlertDialogDescription>
+						<AlertDialogTitle className="text-cyan-300">
+							Delete Lecture
+						</AlertDialogTitle>
+						<AlertDialogDescription className="text-cyan-300/60">
 							Are you sure you want to delete this lecture? This action cannot
 							be undone.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<div className="flex gap-3 justify-end">
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogCancel className="border-cyan-500/30 hover:border-cyan-500/60 hover:bg-cyan-500/10 text-cyan-300">
+							Cancel
+						</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={handleConfirmDelete}
 							disabled={isDeleting}

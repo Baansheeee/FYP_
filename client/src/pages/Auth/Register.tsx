@@ -104,7 +104,21 @@ const Register = () => {
 
 			// Extract user data - handle various response structures
 			const userObj = data.user || data;
-			const userRole = Number(userObj?.role) || 1;
+			const roleValue = userObj?.role || 1;
+
+			// Convert role string to numeric: "Admin"→2, else→1
+			const roleMap: { [key: string]: 1 | 2 } = {
+				Admin: 2,
+				Developer: 1,
+				Viewer: 1,
+			};
+			const userRole: 1 | 2 =
+				typeof roleValue === "string"
+					? roleMap[roleValue] || 1
+					: roleValue === 2
+					? 2
+					: 1;
+
 			const userName = userObj?.name || "";
 			const userEmail = userObj?.email || "";
 			const userToken = data.token || "";
@@ -131,7 +145,7 @@ const Register = () => {
 			console.log("After login - about to navigate to /dashboard");
 
 			// Navigate to dashboard
-			navigate("/dashboard");
+			navigate("/user/dashboard");
 		} catch (err: any) {
 			const errorMessage = err.response?.data?.message;
 			console.error("Registration error:", errorMessage);
@@ -170,7 +184,7 @@ const Register = () => {
 			});
 
 			// Navigate to dashboard
-			navigate("/dashboard");
+			navigate("/user/dashboard");
 		} catch (err: any) {
 			console.error(err);
 			setErrors({

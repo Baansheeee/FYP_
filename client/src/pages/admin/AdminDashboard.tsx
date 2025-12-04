@@ -13,58 +13,83 @@ import ComplianceTab from "@/pages/admin/ComplianceTab";
 
 const Admin = () => {
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-background via-purple-50/20 to-background">
+		<div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+			{/* Animated background elements */}
+			<div className="fixed inset-0 overflow-hidden pointer-events-none">
+				<div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
+				<div
+					className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"
+					style={{ animationDelay: "1s" }}></div>
+				<div
+					className="absolute top-1/2 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"
+					style={{ animationDelay: "2s" }}></div>
+			</div>
 			<Toaster
 				position="top-center"
 				toastOptions={{
 					duration: 1000,
 					style: {
-						background: "#1f1f1f",
+						background: "#0f172a",
 						color: "#fff",
 						padding: "12px 16px",
-						borderRadius: "10px",
+						borderRadius: "12px",
 						fontSize: "14px",
+						border: "1px solid rgba(34, 211, 238, 0.3)",
 					},
 					success: {
-						style: { background: "#36b5a8" },
+						style: {
+							background: "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+						},
 					},
 					error: {
-						style: { background: "#ef4444" },
+						style: {
+							background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+						},
 					},
 				}}
 			/>
 			<Navbar />
-			<div className="flex w-full">
+			<div className="flex w-full relative z-10">
 				<main className="flex-1 overflow-auto">
 					<div className="container mx-auto p-8 space-y-8">
 						{/* Header */}
-						<div className="flex items-center justify-center gap-3 animate-fade-in">
-							<div className="w-14 h-14 rounded-xl gradient-purple flex items-center justify-center shadow-lg">
+						<div className="flex items-center justify-center gap-6 animate-fade-in">
+							<div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-2xl shadow-cyan-500/50 hover:shadow-cyan-500/80 transition-all duration-300">
 								<Shield className="w-8 h-8 text-white" />
 							</div>
 							<div className="flex flex-col items-center">
-								<h1 className="text-5xl font-bold">Admin Dashboard</h1>
-								<p className="text-muted-foreground">
+								<h1 className="text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+									Admin Control
+								</h1>
+								<p className="text-cyan-300/70 mt-2 text-lg">
 									Manage users, education, policies, and subscriptions
 								</p>
 							</div>
 						</div>
 						<Tabs defaultValue="users" className="w-full">
 							<div className="flex flex-row justify-center items-center">
-								<TabsList className="grid w-full max-w-4xl grid-cols-4 ">
-									<TabsTrigger value="users">
+								<TabsList className="grid w-full max-w-4xl grid-cols-4 bg-slate-800/40 backdrop-blur-xl border border-cyan-500/20 rounded-xl p-1">
+									<TabsTrigger
+										value="users"
+										className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-cyan-300 rounded-lg transition-all duration-300">
 										<Users className="w-4 h-4 mr-2" />
 										Users
 									</TabsTrigger>
-									<TabsTrigger value="education">
+									<TabsTrigger
+										value="education"
+										className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-cyan-300 rounded-lg transition-all duration-300">
 										<BookOpen className="w-4 h-4 mr-2" />
 										Education
 									</TabsTrigger>
-									<TabsTrigger value="logs">
+									<TabsTrigger
+										value="logs"
+										className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-cyan-300 rounded-lg transition-all duration-300">
 										<FileText className="w-4 h-4 mr-2" />
 										Audit Logs
 									</TabsTrigger>
-									<TabsTrigger value="compliance">
+									<TabsTrigger
+										value="compliance"
+										className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-cyan-300 rounded-lg transition-all duration-300">
 										<Shield className="w-4 h-4 mr-2" />
 										Compliance
 									</TabsTrigger>

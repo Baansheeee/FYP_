@@ -4,12 +4,6 @@
  * @format
  */
 
-/**
- * eslint-disable @typescript-eslint/no-explicit-any
- *
- * @format
- */
-
 "use client";
 
 import { useState, useContext } from "react";
@@ -21,7 +15,6 @@ import axiosInstance from "@/api/axios";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { AuthContext } from "../../components/context/authContext";
 import RoleToggle from "@/components/RoleToggle";
-import FormToggle from "@/components/forms/FormToggle";
 import FloatingLabelInput from "@/components/ui/FloatingLabelInput";
 import Logo from "@/components/Logo";
 
@@ -93,8 +86,13 @@ const LoginPage = () => {
 				password,
 			});
 
-			// Ensure role is properly typed as 1 or 2
-			const validRole = Number(data.user.role) === 2 ? 2 : 1;
+			// Convert role string to numeric: "Admin"→2, else→1
+			const roleMap: { [key: string]: 1 | 2 } = {
+				Admin: 2,
+				Developer: 1,
+				Viewer: 1,
+			};
+			const validRole: 1 | 2 = roleMap[data.user.role] || 1;
 
 			login({
 				token: data.token,
@@ -105,7 +103,7 @@ const LoginPage = () => {
 			// Flag for dashboard welcome toast
 			sessionStorage.setItem("loginWelcome", "true");
 
-			navigate(validRole === 2 ? "/admin" : "/dashboard");
+			navigate(validRole === 2 ? "/admin" : "/user/dashboard");
 		} catch (err: any) {
 			const errorMessage = err.response?.data?.message;
 
@@ -132,37 +130,33 @@ const LoginPage = () => {
 
 		setLoading(true);
 		try {
-			// Decode JWT to get profile picture
-			const base64Url = response.credential.split(".")[1];
-			const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-			const jsonPayload = decodeURIComponent(
-				atob(base64)
-					.split("")
-					.map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-					.join("")
-			);
-			const googlePayload = JSON.parse(jsonPayload);
-
 			const { data } = await axiosInstance.post("/auth/google-login", {
 				tokenId: response.credential,
 			});
+
+			console.log("Google Login Response:", data);
+
+			const profilePictureUrl = data.user.googleProfilePicture;
+			console.log("Profile Picture URL from backend:", profilePictureUrl);
 
 			login({
 				token: data.token,
 				role: 1,
 				name: data.user.name,
 				email: data.user.email,
-				googleProfilePicture: googlePayload.picture,
+				googleProfilePicture: profilePictureUrl,
 			});
 
 			// Store Google profile picture in localStorage
-			if (googlePayload.picture) {
-				localStorage.setItem("googleProfilePicture", googlePayload.picture);
+			if (profilePictureUrl) {
+				localStorage.setItem("googleProfilePicture", profilePictureUrl);
+				console.log("Stored in localStorage:", profilePictureUrl);
 			}
 
-			navigate("/dashboard");
+			navigate("/user/dashboard");
 		} catch (err: any) {
 			const errorMessage = err.response?.data?.message?.toLowerCase() || "";
+			console.error("Google Login Error:", err);
 
 			if (
 				errorMessage.includes("network") ||

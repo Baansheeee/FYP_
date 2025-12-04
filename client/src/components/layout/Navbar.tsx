@@ -7,6 +7,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, User, LogOut } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AuthContext } from "../context/authContext";
 import { useContext } from "react";
 import toast from "react-hot-toast";
@@ -94,17 +95,15 @@ const Navbar = () => {
 									) : (
 										// Regular user
 										<>
-											{user.googleProfilePicture ? (
-												<img
+											<Avatar>
+												<AvatarImage
 													src={user.googleProfilePicture}
-													alt="Profile"
-													className="w-10 h-10 rounded-full"
+													alt={user.name}
 												/>
-											) : (
-												<div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-purple-500 flex items-center justify-center">
-													<User className="w-10 h-10 text-white" />
-												</div>
-											)}
+												<AvatarFallback className="bg-gradient-to-r from-purple-400 to-purple-500">
+													<User className="w-5 h-5 text-white" />
+												</AvatarFallback>
+											</Avatar>
 											<span className="text-sm font-medium">
 												{user.name || "User"}
 											</span>
@@ -116,7 +115,7 @@ const Navbar = () => {
 								<DropdownMenuItem
 									onClick={() => {
 										if (user.role === 1) {
-											navigate("/dashboard");
+											navigate("/user/dashboard");
 										} else if (user.role === 2) {
 											navigate("/admin");
 										}
@@ -190,20 +189,18 @@ const Navbar = () => {
 												</>
 											) : (
 												<>
-													{localStorage.getItem("googleProfilePicture") ? (
-														<img
+													<Avatar>
+														<AvatarImage
 															src={
 																localStorage.getItem("googleProfilePicture") ||
 																""
 															}
-															alt="Profile"
-															className="w-10 h-10 rounded-full"
+															alt={user.name}
 														/>
-													) : (
-														<div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-purple-500 flex items-center justify-center">
+														<AvatarFallback className="bg-gradient-to-r from-purple-400 to-purple-500">
 															<User className="w-5 h-5 text-white" />
-														</div>
-													)}
+														</AvatarFallback>
+													</Avatar>
 													<span className="font-semibold">
 														{user.name || "User"}
 													</span>

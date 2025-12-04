@@ -5,8 +5,15 @@ import Navbar from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Network, Download, Play, Save } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const ArchitectureDesigner = () => {
+	const navigate = useNavigate();
+
+	const handleStartDesigning = () => {
+		navigate("/user/architecture/create");
+	};
+
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-background via-purple-50/20 to-background">
 			<Navbar />
@@ -55,7 +62,9 @@ const ArchitectureDesigner = () => {
 									Start designing your AWS infrastructure by adding components
 									from the sidebar or importing from the chatbot
 								</p>
-								<Button className="gradient-purple text-white shadow-md hover:shadow-lg hover:shadow-purple-glow/50 transition-all">
+								<Button
+									onClick={handleStartDesigning}
+									className="gradient-purple text-white shadow-md hover:shadow-lg hover:shadow-purple-glow/50 transition-all">
 									Start Designing
 								</Button>
 							</div>

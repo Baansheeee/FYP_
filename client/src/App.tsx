@@ -13,22 +13,27 @@ import {
 	AdminPrivateRoute,
 	AuthenticatedRoute,
 } from "./components/PrivateRoutes";
+import "./styles/reactflow.css";
 import Index from "./pages/Index";
 import UserDashboard from "./pages/user/UserDashboard";
 import Chatbot from "./pages/user/Chatbot";
-import ArchitectureDesigner from "./pages/user/ArchitectureDesigner";
+import ArchitectureDesigner from "./pages/user/architecture/ArchitectureDesigner";
 import CostEstimate from "./pages/user/CostEstimate";
 import Version from "./pages/user/Version";
 import Deployment from "./pages/user/Deployment";
-import Canvas from "./pages/user/Canvas";
+// import Canvas from "./pages/user/architecture/Canvas";
 import ImportResources from "./pages/user/ImportResources";
 import DevOps from "./pages/user/DevOps";
 import Performance from "./pages/user/Performance";
 import Feedback from "./pages/user/Feedback";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import UserDetails from "./pages/user/UserDetails";
 import APIIntegration from "./pages/user/APIIntegration";
 import Education from "./pages/user/Education";
+import EducationTutorials from "./pages/user/education/EducationTutorials";
+import EducationDocs from "./pages/user/education/EducationDocs";
+import EducationVideos from "./pages/user/education/EducationVideos";
+import EducationFAQs from "./pages/user/education/EducationFAQs";
+import EducationCommunity from "./pages/user/education/EducationCommunity";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import NotFound from "./pages/NotFound";
@@ -40,9 +45,38 @@ import Features from "./pages/Features";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 
+import ChatHistory from "./pages/user/chatbot/ChatHistory";
+import ChatTemplates from "./pages/user/chatbot/ChatTemplates";
+import ChatSessions from "./pages/user/chatbot/ChatSessions";
+
+import ArchitectureList from "./pages/user/architecture/ArchitectureList";
+import ArchitectureEditor from "./pages/user/architecture/ArchitectureEditor";
+import ArchitectureCreate from "./pages/user/architecture/ArchitectureCreate";
+import ArchitectureTemplates from "./pages/user/architecture/ArchitectureTemplates";
+import ArchitectureDetails from "./pages/user/architecture/ArchitectureDetails";
+
+import CostAnalysis from "./pages/user/cost/CostAnalysis";
+import CostReports from "./pages/user/cost/CostReports";
+import BudgetAlerts from "./pages/user/cost/BudgetAlerts";
+
+import DeploymentHistory from "./pages/user/deployment/DeploymentHistory";
+import DeploymentStatus from "./pages/user/deployment/DeploymentStatus";
+import RollbackManager from "./pages/user/deployment/RollbackManager";
+
+import VersionHistory from "./pages/user/version/VersionHistory";
+import VersionCompare from "./pages/user/version/VersionCompare";
+import VersionRestore from "./pages/user/version/VersionRestore";
+
+import ContainerManager from "./pages/user/devops/ContainerManager";
+import PipelineConfig from "./pages/user/devops/PipelineConfig";
+import LogViewer from "./pages/user/devops/LogViewer";
+
+import MetricsViewer from "./pages/user/performance/MetricsViewer";
+import HealthCheck from "./pages/user/performance/HealthCheck";
+import AlertsManagement from "./pages/user/performance/AlertsManagement";
+
 const queryClient = new QueryClient();
 
-// ScrollToTop component - scrolls to top on route change
 const ScrollToTop = () => {
 	const { pathname } = useLocation();
 
@@ -64,7 +98,6 @@ const App = () => (
 					<ScrollToTop />
 					<AuthProvider>
 						<Routes>
-							{/* Public Routes */}
 							<Route path="/" element={<Index />} />
 							<Route path="/pricing" element={<Pricing />} />
 							<Route path="/features" element={<Features />} />
@@ -77,10 +110,8 @@ const App = () => (
 								path="/auth/forgot-password"
 								element={<ForgotPassword />}
 							/>
-
-							{/* User Private Routes (role: 1) */}
 							<Route
-								path="/dashboard"
+								path="/user/dashboard"
 								element={
 									<UserPrivateRoute>
 										<UserDashboard />
@@ -88,7 +119,7 @@ const App = () => (
 								}
 							/>
 							<Route
-								path="/chatbot"
+								path="/user/chatbot"
 								element={
 									<UserPrivateRoute>
 										<Chatbot />
@@ -96,7 +127,31 @@ const App = () => (
 								}
 							/>
 							<Route
-								path="/architecture/designer"
+								path="/user/chatbot/history"
+								element={
+									<UserPrivateRoute>
+										<ChatHistory />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/chatbot/templates"
+								element={
+									<UserPrivateRoute>
+										<ChatTemplates />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/chatbot/sessions"
+								element={
+									<UserPrivateRoute>
+										<ChatSessions />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/architecture"
 								element={
 									<UserPrivateRoute>
 										<ArchitectureDesigner />
@@ -104,7 +159,55 @@ const App = () => (
 								}
 							/>
 							<Route
-								path="/cost/estimate"
+								path="/user/architecture/list"
+								element={
+									<UserPrivateRoute>
+										<ArchitectureList />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/architecture/create"
+								element={
+									<UserPrivateRoute>
+										<ArchitectureCreate />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/architecture/editor"
+								element={
+									<UserPrivateRoute>
+										<ArchitectureEditor />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/architecture-editor/:id"
+								element={
+									<UserPrivateRoute>
+										<ArchitectureEditor />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/architecture/templates"
+								element={
+									<UserPrivateRoute>
+										<ArchitectureTemplates />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/architecture/details"
+								element={
+									<UserPrivateRoute>
+										<ArchitectureDetails />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/cost"
 								element={
 									<UserPrivateRoute>
 										<CostEstimate />
@@ -112,7 +215,31 @@ const App = () => (
 								}
 							/>
 							<Route
-								path="/version"
+								path="/user/cost/analysis"
+								element={
+									<UserPrivateRoute>
+										<CostAnalysis />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/cost/reports"
+								element={
+									<UserPrivateRoute>
+										<CostReports />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/cost/alerts"
+								element={
+									<UserPrivateRoute>
+										<BudgetAlerts />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/version"
 								element={
 									<UserPrivateRoute>
 										<Version />
@@ -120,7 +247,31 @@ const App = () => (
 								}
 							/>
 							<Route
-								path="/deployment"
+								path="/user/version/history"
+								element={
+									<UserPrivateRoute>
+										<VersionHistory />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/version/compare"
+								element={
+									<UserPrivateRoute>
+										<VersionCompare />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/version/restore"
+								element={
+									<UserPrivateRoute>
+										<VersionRestore />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/deployment"
 								element={
 									<UserPrivateRoute>
 										<Deployment />
@@ -128,15 +279,39 @@ const App = () => (
 								}
 							/>
 							<Route
-								path="/canvas"
+								path="/user/deployment/history"
 								element={
 									<UserPrivateRoute>
-										<Canvas />
+										<DeploymentHistory />
 									</UserPrivateRoute>
 								}
 							/>
 							<Route
-								path="/import/connect"
+								path="/user/deployment/status"
+								element={
+									<UserPrivateRoute>
+										<DeploymentStatus />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/deployment/rollback"
+								element={
+									<UserPrivateRoute>
+										<RollbackManager />
+									</UserPrivateRoute>
+								}
+							/>
+							{/* <Route
+								path="/user/canvas"
+								element={
+									<UserPrivateRoute>
+										<Canvas />
+									</UserPrivateRoute>
+								} */}
+							{/* /> */}
+							<Route
+								path="/user/import"
 								element={
 									<UserPrivateRoute>
 										<ImportResources />
@@ -144,7 +319,7 @@ const App = () => (
 								}
 							/>
 							<Route
-								path="/devops/docker"
+								path="/user/devops"
 								element={
 									<UserPrivateRoute>
 										<DevOps />
@@ -152,7 +327,31 @@ const App = () => (
 								}
 							/>
 							<Route
-								path="/performance/dashboard"
+								path="/user/devops/containers"
+								element={
+									<UserPrivateRoute>
+										<ContainerManager />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/devops/pipeline"
+								element={
+									<UserPrivateRoute>
+										<PipelineConfig />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/devops/logs"
+								element={
+									<UserPrivateRoute>
+										<LogViewer />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/performance"
 								element={
 									<UserPrivateRoute>
 										<Performance />
@@ -160,7 +359,31 @@ const App = () => (
 								}
 							/>
 							<Route
-								path="/feedback/rate"
+								path="/user/performance/metrics"
+								element={
+									<UserPrivateRoute>
+										<MetricsViewer />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/performance/health"
+								element={
+									<UserPrivateRoute>
+										<HealthCheck />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/performance/alerts"
+								element={
+									<UserPrivateRoute>
+										<AlertsManagement />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/feedback"
 								element={
 									<UserPrivateRoute>
 										<Feedback />
@@ -168,7 +391,7 @@ const App = () => (
 								}
 							/>
 							<Route
-								path="/api/integrations"
+								path="/user/api"
 								element={
 									<UserPrivateRoute>
 										<APIIntegration />
@@ -176,15 +399,53 @@ const App = () => (
 								}
 							/>
 							<Route
-								path="/education/tutorials"
+								path="/user/education"
 								element={
 									<UserPrivateRoute>
 										<Education />
 									</UserPrivateRoute>
 								}
 							/>
-
-							{/* Admin Private Routes (role: 2) */}
+							<Route
+								path="/user/education/tutorials"
+								element={
+									<UserPrivateRoute>
+										<EducationTutorials />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/education/docs"
+								element={
+									<UserPrivateRoute>
+										<EducationDocs />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/education/videos"
+								element={
+									<UserPrivateRoute>
+										<EducationVideos />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/education/faqs"
+								element={
+									<UserPrivateRoute>
+										<EducationFAQs />
+									</UserPrivateRoute>
+								}
+							/>
+							<Route
+								path="/user/education/community"
+								element={
+									<UserPrivateRoute>
+										<EducationCommunity />
+									</UserPrivateRoute>
+								}
+							/>
 							<Route
 								path="/admin"
 								element={
@@ -193,16 +454,6 @@ const App = () => (
 									</AdminPrivateRoute>
 								}
 							/>
-							<Route
-								path="/user/:userId"
-								element={
-									<AdminPrivateRoute>
-										<UserDetails />
-									</AdminPrivateRoute>
-								}
-							/>
-
-							{/* Catch-all */}
 							<Route path="*" element={<NotFound />} />
 						</Routes>
 					</AuthProvider>

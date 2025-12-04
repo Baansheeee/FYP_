@@ -13,6 +13,7 @@ const lectureRoutes = require("./routes/lectureRoutes");
 const communityRoutes = require("./routes/communityRoutes");
 const auditRoutes = require("./routes/auditRoutes");
 const complianceRoutes = require("./routes/complianceRoutes");
+const architectureRoutes = require("./routes/architectureRoutes");
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/api/v1/lectures", lectureRoutes);
 app.use("/api/v1/community", communityRoutes);
 app.use("/api/v1/audit", auditRoutes);
 app.use("/api/v1/compliance", complianceRoutes);
+app.use("/api/v1/architecture", architectureRoutes);
 
 mongoose
 	.connect(process.env.MONGO_URI)

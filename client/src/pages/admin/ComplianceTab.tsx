@@ -413,51 +413,57 @@ const ComplianceTab = () => {
 	return (
 		<div className="space-y-6">
 			{/* ============ POLICIES SECTION ============ */}
-			<Card className="glass-card border-border/50">
-				<CardHeader className="flex flex-row items-center justify-between">
+			<Card className="bg-slate-800/40 backdrop-blur-xl border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 shadow-2xl">
+				<CardHeader className="border-b border-cyan-500/10 flex flex-row items-center justify-between">
 					<div>
-						<CardTitle>Security & Compliance Policies</CardTitle>
-						<p className="text-sm text-muted-foreground mt-1">
-							Enforce governance policies for all users
+						<CardTitle className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+							Security & Compliance Policies
+						</CardTitle>
+						<p className="text-sm text-cyan-300/60 mt-2">
+							🔐 Enforce governance policies for all users
 						</p>
 					</div>
 					<Button
 						onClick={() => openPolicyDialog()}
-						className="gradient-purple text-white gap-2">
+						className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-600 hover:to-blue-600 shadow-lg shadow-cyan-500/50 transition-all duration-300 gap-2">
 						<Plus className="w-4 h-4" />
 						Add Policy
 					</Button>
 				</CardHeader>
-				<CardContent>
+				<CardContent className="pt-6">
 					<div className="space-y-4">
 						{policiesLoading ? (
 							<div className="flex items-center justify-center py-12">
-								<Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+								<Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
 							</div>
 						) : policies.length === 0 ? (
-							<p className="text-center text-muted-foreground py-8">
+							<p className="text-center text-cyan-300/60 py-8">
 								No policies configured
 							</p>
 						) : (
 							policies.map((policy) => (
 								<div
 									key={policy.id}
-									className="p-4 rounded-lg bg-secondary/30 hover:bg-secondary/50 transition-colors border border-border/50">
+									className="p-4 rounded-xl bg-gradient-to-r from-slate-700/40 to-slate-600/30 hover:from-cyan-500/10 hover:to-blue-500/10 transition-all duration-300 border border-cyan-500/10 hover:border-cyan-500/30 group">
 									<div className="flex items-start justify-between">
 										<div className="flex-1">
 											<div className="flex items-center gap-2">
-												<h4 className="font-semibold">{policy.name}</h4>
-												<Badge variant="outline" className="text-xs">
+												<h4 className="font-semibold text-cyan-300 group-hover:text-cyan-200 transition-colors">
+													{policy.name}
+												</h4>
+												<Badge
+													variant="outline"
+													className="text-xs bg-cyan-500/20 border-cyan-500/30 text-cyan-300">
 													{policy.type}
 												</Badge>
 												{policy.enforced && (
-													<CheckCircle2 className="w-4 h-4 text-green-500" />
+													<CheckCircle2 className="w-4 h-4 text-green-400" />
 												)}
 											</div>
-											<p className="text-sm text-muted-foreground mt-1">
+											<p className="text-sm text-cyan-300/60 mt-1">
 												{policy.description}
 											</p>
-											<p className="text-xs text-muted-foreground mt-2">
+											<p className="text-xs text-cyan-300/50 mt-2">
 												Last Modified:{" "}
 												{new Date(policy.lastModified).toLocaleDateString()}
 											</p>
@@ -467,7 +473,7 @@ const ComplianceTab = () => {
 												size="sm"
 												variant="outline"
 												onClick={() => openPolicyDialog(policy)}
-												className="gap-1">
+												className="gap-1 border-cyan-500/30 hover:border-cyan-500/60 hover:bg-cyan-500/10 text-cyan-300">
 												<Edit2 className="w-4 h-4" />
 												Edit
 											</Button>
@@ -489,40 +495,44 @@ const ComplianceTab = () => {
 			</Card>
 
 			{/* ============ PLANS SECTION ============ */}
-			<Card className="glass-card border-border/50">
-				<CardHeader className="flex flex-row items-center justify-between">
+			<Card className="bg-slate-800/40 backdrop-blur-xl border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 shadow-2xl">
+				<CardHeader className="border-b border-cyan-500/10 flex flex-row items-center justify-between">
 					<div>
-						<CardTitle>Subscription Plans</CardTitle>
-						<p className="text-sm text-muted-foreground mt-1">
-							Manage subscription tiers and features
+						<CardTitle className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+							Subscription Plans
+						</CardTitle>
+						<p className="text-sm text-cyan-300/60 mt-2">
+							💳 Manage subscription tiers and features
 						</p>
 					</div>
 					<Button
 						onClick={() => openPlanDialog()}
-						className="gradient-purple text-white gap-2">
+						className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-600 hover:to-blue-600 shadow-lg shadow-cyan-500/50 transition-all duration-300 gap-2">
 						<Plus className="w-4 h-4" />
 						Add Plan
 					</Button>
 				</CardHeader>
-				<CardContent>
+				<CardContent className="pt-6">
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 						{plansLoading ? (
 							<div className="flex items-center justify-center py-12 col-span-3">
-								<Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+								<Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
 							</div>
 						) : plans.length === 0 ? (
-							<p className="text-center text-muted-foreground py-8 col-span-3">
+							<p className="text-center text-cyan-300/60 py-8 col-span-3">
 								No plans configured
 							</p>
 						) : (
 							plans.map((plan) => (
 								<div
 									key={plan.id}
-									className="p-4 rounded-lg border border-border/50 bg-secondary/20 hover:bg-secondary/30 transition-colors flex flex-col">
+									className="p-4 rounded-xl border border-cyan-500/20 bg-gradient-to-br from-slate-700/30 to-slate-600/20 hover:border-cyan-500/40 hover:from-cyan-500/10 hover:to-blue-500/10 transition-all duration-300 flex flex-col group">
 									<div className="flex items-start justify-between mb-3">
 										<div className="flex-1">
-											<h4 className="font-semibold text-lg">{plan.name}</h4>
-											<p className="text-2xl font-bold text-purple-500 mt-1">
+											<h4 className="font-semibold text-lg text-cyan-300 group-hover:text-cyan-200 transition-colors">
+												{plan.name}
+											</h4>
+											<p className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mt-1">
 												${plan.price}
 											</p>
 										</div>
@@ -533,13 +543,15 @@ const ComplianceTab = () => {
 									</div>
 									<div className="space-y-2 flex-1">
 										{plan.features.map((feature, idx) => (
-											<p key={idx} className="text-sm flex items-center gap-2">
-												<CheckCircle2 className="w-4 h-4 text-green-500" />
+											<p
+												key={idx}
+												className="text-sm flex items-center gap-2 text-cyan-300/80">
+												<CheckCircle2 className="w-4 h-4 text-green-400 flex-shrink-0" />
 												{feature}
 											</p>
 										))}
 									</div>
-									<p className="text-xs text-muted-foreground mt-3 mb-3">
+									<p className="text-xs text-cyan-300/60 mt-3 mb-3">
 										{plan.activeUsers} active subscribers
 									</p>
 									<div className="flex gap-2">
@@ -547,7 +559,7 @@ const ComplianceTab = () => {
 											size="sm"
 											variant="outline"
 											onClick={() => openPlanDialog(plan)}
-											className="flex-1 gap-1">
+											className="flex-1 gap-1 border-cyan-500/30 hover:border-cyan-500/60 hover:bg-cyan-500/10 text-cyan-300">
 											<Edit2 className="w-4 h-4" />
 											Edit
 										</Button>
@@ -569,12 +581,12 @@ const ComplianceTab = () => {
 
 			{/* ============ POLICY DIALOG ============ */}
 			<Dialog open={policyDialogOpen} onOpenChange={setPolicyDialogOpen}>
-				<DialogContent className="sm:max-w-[500px]">
+				<DialogContent className="sm:max-w-[500px] bg-slate-900/95 border-cyan-500/30">
 					<DialogHeader>
-						<DialogTitle>
+						<DialogTitle className="text-cyan-300">
 							{editingPolicy ? "Edit Policy" : "Create New Policy"}
 						</DialogTitle>
-						<DialogDescription>
+						<DialogDescription className="text-cyan-300/60">
 							{editingPolicy
 								? "Update the policy details"
 								: "Add a new security or compliance policy"}
@@ -586,8 +598,8 @@ const ComplianceTab = () => {
 						<div className="space-y-2">
 							<Label
 								htmlFor="policy-name"
-								className="text-gray-700 font-medium">
-								Policy Name <span className="text-red-500">*</span>
+								className="text-cyan-300 font-medium">
+								Policy Name <span className="text-red-400">*</span>
 							</Label>
 							<Input
 								id="policy-name"
@@ -596,12 +608,12 @@ const ComplianceTab = () => {
 								onChange={(e) =>
 									setPolicyFormData({ ...policyFormData, name: e.target.value })
 								}
-								className={`h-10 ${
+								className={`h-10 bg-slate-800 border-cyan-500/30 text-cyan-300 placeholder:text-cyan-300/40 focus:border-cyan-400 focus:ring-cyan-500/50 ${
 									policyFormErrors.name ? "border-red-500" : ""
 								}`}
 							/>
 							{policyFormErrors.name && (
-								<p className="text-sm text-red-500">{policyFormErrors.name}</p>
+								<p className="text-sm text-red-400">{policyFormErrors.name}</p>
 							)}
 						</div>
 
@@ -609,8 +621,8 @@ const ComplianceTab = () => {
 						<div className="space-y-2">
 							<Label
 								htmlFor="policy-desc"
-								className="text-gray-700 font-medium">
-								Description <span className="text-red-500">*</span>
+								className="text-cyan-300 font-medium">
+								Description <span className="text-red-400">*</span>
 							</Label>
 							<textarea
 								id="policy-desc"
@@ -622,12 +634,12 @@ const ComplianceTab = () => {
 										description: e.target.value,
 									})
 								}
-								className={`w-full h-24 p-2 rounded-lg bg-secondary/30 border border-border/50 text-sm ${
+								className={`w-full h-24 p-2 rounded-lg bg-slate-800 border border-cyan-500/30 text-cyan-300 placeholder:text-cyan-300/40 text-sm focus:border-cyan-400 focus:ring-cyan-500/50 ${
 									policyFormErrors.description ? "border-red-500" : ""
 								}`}
 							/>
 							{policyFormErrors.description && (
-								<p className="text-sm text-red-500">
+								<p className="text-sm text-red-400">
 									{policyFormErrors.description}
 								</p>
 							)}
@@ -637,7 +649,7 @@ const ComplianceTab = () => {
 						<div className="space-y-2">
 							<Label
 								htmlFor="policy-type"
-								className="text-gray-700 font-medium">
+								className="text-cyan-300 font-medium">
 								Type
 							</Label>
 							<Select
@@ -645,10 +657,12 @@ const ComplianceTab = () => {
 								onValueChange={(value) =>
 									setPolicyFormData({ ...policyFormData, type: value })
 								}>
-								<SelectTrigger id="policy-type" className="h-10">
+								<SelectTrigger
+									id="policy-type"
+									className="h-10 bg-slate-800 border-cyan-500/30 text-cyan-300">
 									<SelectValue />
 								</SelectTrigger>
-								<SelectContent>
+								<SelectContent className="bg-slate-800 border-cyan-500/30">
 									<SelectItem value="Security">Security</SelectItem>
 									<SelectItem value="Privacy">Privacy</SelectItem>
 									<SelectItem value="Compliance">Compliance</SelectItem>
@@ -658,7 +672,7 @@ const ComplianceTab = () => {
 						</div>
 
 						{/* Enforced */}
-						<div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/20">
+						<div className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50 border border-cyan-500/20">
 							<input
 								type="checkbox"
 								id="policy-enforced"
@@ -669,11 +683,11 @@ const ComplianceTab = () => {
 										enforced: e.target.checked,
 									})
 								}
-								className="w-4 h-4 cursor-pointer"
+								className="w-4 h-4 cursor-pointer accent-cyan-500"
 							/>
 							<Label
 								htmlFor="policy-enforced"
-								className="cursor-pointer text-sm font-medium">
+								className="cursor-pointer text-sm font-medium text-cyan-300">
 								Enforce this policy for all users
 							</Label>
 						</div>
@@ -683,13 +697,14 @@ const ComplianceTab = () => {
 						<Button
 							variant="outline"
 							onClick={closePolicyDialog}
-							disabled={policySaving}>
+							disabled={policySaving}
+							className="border-cyan-500/30 hover:border-cyan-500/60 hover:bg-cyan-500/10 text-cyan-300">
 							Cancel
 						</Button>
 						<Button
 							onClick={handleSavePolicy}
 							disabled={policySaving}
-							className="gradient-purple text-white">
+							className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-600 hover:to-blue-600">
 							{policySaving ? "Saving..." : "Save Policy"}
 						</Button>
 					</DialogFooter>
@@ -698,12 +713,12 @@ const ComplianceTab = () => {
 
 			{/* ============ PLAN DIALOG ============ */}
 			<Dialog open={planDialogOpen} onOpenChange={setPlanDialogOpen}>
-				<DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+				<DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-slate-900/95 border-cyan-500/30">
 					<DialogHeader>
-						<DialogTitle>
+						<DialogTitle className="text-cyan-300">
 							{editingPlan ? "Edit Plan" : "Create New Plan"}
 						</DialogTitle>
-						<DialogDescription>
+						<DialogDescription className="text-cyan-300/60">
 							{editingPlan
 								? "Update the plan details"
 								: "Add a new subscription plan"}
@@ -713,8 +728,8 @@ const ComplianceTab = () => {
 					<div className="space-y-4 py-4">
 						{/* Name */}
 						<div className="space-y-2">
-							<Label htmlFor="plan-name" className="text-gray-700 font-medium">
-								Plan Name <span className="text-red-500">*</span>
+							<Label htmlFor="plan-name" className="text-cyan-300 font-medium">
+								Plan Name <span className="text-red-400">*</span>
 							</Label>
 							<Input
 								id="plan-name"
@@ -723,19 +738,19 @@ const ComplianceTab = () => {
 								onChange={(e) =>
 									setPlanFormData({ ...planFormData, name: e.target.value })
 								}
-								className={`h-10 ${
+								className={`h-10 bg-slate-800 border-cyan-500/30 text-cyan-300 placeholder:text-cyan-300/40 focus:border-cyan-400 focus:ring-cyan-500/50 ${
 									planFormErrors.name ? "border-red-500" : ""
 								}`}
 							/>
 							{planFormErrors.name && (
-								<p className="text-sm text-red-500">{planFormErrors.name}</p>
+								<p className="text-sm text-red-400">{planFormErrors.name}</p>
 							)}
 						</div>
 
 						{/* Price */}
 						<div className="space-y-2">
-							<Label htmlFor="plan-price" className="text-gray-700 font-medium">
-								Price (USD) <span className="text-red-500">*</span>
+							<Label htmlFor="plan-price" className="text-cyan-300 font-medium">
+								Price (USD) <span className="text-red-400">*</span>
 							</Label>
 							<Input
 								id="plan-price"
@@ -745,18 +760,18 @@ const ComplianceTab = () => {
 								onChange={(e) =>
 									setPlanFormData({ ...planFormData, price: e.target.value })
 								}
-								className={`h-10 ${
+								className={`h-10 bg-slate-800 border-cyan-500/30 text-cyan-300 placeholder:text-cyan-300/40 focus:border-cyan-400 focus:ring-cyan-500/50 ${
 									planFormErrors.price ? "border-red-500" : ""
 								}`}
 							/>
 							{planFormErrors.price && (
-								<p className="text-sm text-red-500">{planFormErrors.price}</p>
+								<p className="text-sm text-red-400">{planFormErrors.price}</p>
 							)}
 						</div>
 
 						{/* Description */}
 						<div className="space-y-2">
-							<Label htmlFor="plan-desc" className="text-gray-700 font-medium">
+							<Label htmlFor="plan-desc" className="text-cyan-300 font-medium">
 								Description
 							</Label>
 							<textarea
@@ -769,7 +784,7 @@ const ComplianceTab = () => {
 										description: e.target.value,
 									})
 								}
-								className="w-full h-20 p-2 rounded-lg bg-secondary/30 border border-border/50 text-sm"
+								className="w-full h-20 p-2 rounded-lg bg-slate-800 border border-cyan-500/30 text-cyan-300 placeholder:text-cyan-300/40 text-sm focus:border-cyan-400 focus:ring-cyan-500/50"
 							/>
 						</div>
 
@@ -777,7 +792,7 @@ const ComplianceTab = () => {
 						<div className="space-y-2">
 							<Label
 								htmlFor="plan-status"
-								className="text-gray-700 font-medium">
+								className="text-cyan-300 font-medium">
 								Status
 							</Label>
 							<Select
@@ -788,10 +803,12 @@ const ComplianceTab = () => {
 										status: value as "active" | "inactive",
 									})
 								}>
-								<SelectTrigger id="plan-status" className="h-10">
+								<SelectTrigger
+									id="plan-status"
+									className="h-10 bg-slate-800 border-cyan-500/30 text-cyan-300">
 									<SelectValue />
 								</SelectTrigger>
-								<SelectContent>
+								<SelectContent className="bg-slate-800 border-cyan-500/30">
 									<SelectItem value="active">Active</SelectItem>
 									<SelectItem value="inactive">Inactive</SelectItem>
 								</SelectContent>
@@ -800,8 +817,8 @@ const ComplianceTab = () => {
 
 						{/* Features */}
 						<div className="space-y-2">
-							<Label className="text-gray-700 font-medium">
-								Features <span className="text-red-500">*</span>
+							<Label className="text-cyan-300 font-medium">
+								Features <span className="text-red-400">*</span>
 							</Label>
 							<div className="flex gap-2">
 								<Input
@@ -813,18 +830,19 @@ const ComplianceTab = () => {
 											addFeature();
 										}
 									}}
-									className="h-10 flex-1"
+									className="h-10 flex-1 bg-slate-800 border-cyan-500/30 text-cyan-300 placeholder:text-cyan-300/40 focus:border-cyan-400 focus:ring-cyan-500/50"
 								/>
 								<Button
 									type="button"
 									onClick={addFeature}
 									size="sm"
+									className="border-cyan-500/30 hover:border-cyan-500/60 hover:bg-cyan-500/10 text-cyan-300"
 									variant="outline">
 									Add
 								</Button>
 							</div>
 							{planFormErrors.features && (
-								<p className="text-sm text-red-500">
+								<p className="text-sm text-red-400">
 									{planFormErrors.features}
 								</p>
 							)}
@@ -835,14 +853,14 @@ const ComplianceTab = () => {
 									{planFormData.features.map((feature, idx) => (
 										<div
 											key={idx}
-											className="flex items-center justify-between p-2 rounded-lg bg-secondary/30">
-											<span className="text-sm">{feature}</span>
+											className="flex items-center justify-between p-2 rounded-lg bg-slate-800/50 border border-cyan-500/20">
+											<span className="text-sm text-cyan-300">{feature}</span>
 											<Button
 												type="button"
 												size="sm"
 												variant="ghost"
 												onClick={() => removeFeature(idx)}
-												className="h-6 w-6 p-0">
+												className="h-6 w-6 p-0 text-cyan-300 hover:text-cyan-200 hover:bg-cyan-500/10">
 												<X className="w-4 h-4" />
 											</Button>
 										</div>
@@ -856,13 +874,14 @@ const ComplianceTab = () => {
 						<Button
 							variant="outline"
 							onClick={closePlanDialog}
-							disabled={planSaving}>
+							disabled={planSaving}
+							className="border-cyan-500/30 hover:border-cyan-500/60 hover:bg-cyan-500/10 text-cyan-300">
 							Cancel
 						</Button>
 						<Button
 							onClick={handleSavePlan}
 							disabled={planSaving}
-							className="gradient-purple text-white">
+							className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-600 hover:to-blue-600">
 							{planSaving ? "Saving..." : "Save Plan"}
 						</Button>
 					</DialogFooter>
@@ -873,16 +892,20 @@ const ComplianceTab = () => {
 			<AlertDialog
 				open={!!deletePolicy}
 				onOpenChange={(open) => !open && setDeletePolicy(null)}>
-				<AlertDialogContent>
+				<AlertDialogContent className="bg-slate-900/95 border-cyan-500/30">
 					<AlertDialogHeader>
-						<AlertDialogTitle>Delete Policy</AlertDialogTitle>
-						<AlertDialogDescription>
+						<AlertDialogTitle className="text-cyan-300">
+							Delete Policy
+						</AlertDialogTitle>
+						<AlertDialogDescription className="text-cyan-300/60">
 							Are you sure you want to delete "{deletePolicy?.name}"? This
 							action cannot be undone.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<div className="flex gap-3 justify-end">
-						<AlertDialogCancel disabled={isDeletingPolicy}>
+						<AlertDialogCancel
+							disabled={isDeletingPolicy}
+							className="border-cyan-500/30 hover:border-cyan-500/60 hover:bg-cyan-500/10 text-cyan-300">
 							Cancel
 						</AlertDialogCancel>
 						<AlertDialogAction
@@ -899,16 +922,20 @@ const ComplianceTab = () => {
 			<AlertDialog
 				open={!!deletePlan}
 				onOpenChange={(open) => !open && setDeletePlan(null)}>
-				<AlertDialogContent>
+				<AlertDialogContent className="bg-slate-900/95 border-cyan-500/30">
 					<AlertDialogHeader>
-						<AlertDialogTitle>Delete Plan</AlertDialogTitle>
-						<AlertDialogDescription>
+						<AlertDialogTitle className="text-cyan-300">
+							Delete Plan
+						</AlertDialogTitle>
+						<AlertDialogDescription className="text-cyan-300/60">
 							Are you sure you want to delete "{deletePlan?.name}"? This action
 							cannot be undone.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<div className="flex gap-3 justify-end">
-						<AlertDialogCancel disabled={isDeletingPlan}>
+						<AlertDialogCancel
+							disabled={isDeletingPlan}
+							className="border-cyan-500/30 hover:border-cyan-500/60 hover:bg-cyan-500/10 text-cyan-300">
 							Cancel
 						</AlertDialogCancel>
 						<AlertDialogAction

@@ -1,0 +1,133 @@
+/* ReactFlow custom styles */
+
+.reactflow {
+    background: linear-gradient(to bottom, #f8f9fa, #f0f1f3);
+}
+
+.dark .reactflow {
+    background: linear-gradient(to bottom, #0f172a, #1e293b);
+}
+
+/* Node styles */
+.reactflow__node {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark .reactflow__node {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Edge styles */
+.reactflow__edge {
+    stroke-width: 2;
+}
+
+.reactflow__edge-path {
+    stroke: #9333ea;
+}
+
+/* Handle styles */
+.reactflow__handle {
+    width: 8px;
+    height: 8px;
+    background-color: #9333ea;
+    border: 2px solid white;
+}
+
+.dark .reactflow__handle {
+    border-color: #1e293b;
+}
+
+.reactflow__handle-top {
+    top: -4px;
+}
+
+.reactflow__handle-bottom {
+    bottom: -4px;
+}
+
+.reactflow__handle-left {
+    left: -4px;
+}
+
+.reactflow__handle-right {
+    right: -4px;
+}
+
+/* Mini map styles */
+.reactflow__minimap {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.dark .reactflow__minimap {
+    background-color: #1e293b;
+    border-color: #334155;
+}
+
+.reactflow__minimap-mask {
+    fill: #9333ea;
+    opacity: 0.2;
+}
+
+/* Controls styles */
+.reactflow__controls {
+    gap: 8px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    padding: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dark .reactflow__controls {
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.reactflow__controls-button {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.reactflow__controls-button:hover {
+    background: #f1f5f9;
+    border-color: #9333ea;
+    color: #9333ea;
+}
+
+.dark .reactflow__controls-button {
+    background: #334155;
+    border-color: #475569;
+    color: #cbd5e1;
+}
+
+.dark .reactflow__controls-button:hover {
+    background: #475569;
+    border-color: #9333ea;
+    color: #9333ea;
+}
+
+/* Pane styles */
+.reactflow__pane {
+    cursor: grab;
+}
+
+.reactflow__pane.dragging {
+    cursor: grabbing;
+}
+
+/* Selection styles */
+.reactflow__node.selected {
+    box-shadow: 0 0 0 2px #9333ea;
+}

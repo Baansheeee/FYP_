@@ -79,9 +79,16 @@ const loginHandler = async (req, res) => {
 				.status(401)
 				.json({ success: false, message: "Invalid password" });
 
-		const token = jwt.sign({ _id: user._id, role: 1 }, JWT_SECRET, {
+		const token = jwt.sign({ _id: user._id, role: user.role }, JWT_SECRET, {
 			expiresIn: "1d",
 		});
+
+		// Convert role to readable format
+		const roleMap = {
+			2: "Admin",
+			1: "Developer",
+			3: "Viewer",
+		};
 
 		res.status(200).json({
 			success: true,
@@ -93,7 +100,7 @@ const loginHandler = async (req, res) => {
 				email: user.email,
 				username: user.username,
 				phone: user.phone,
-				role: 1,
+				role: roleMap[user.role] || "Developer",
 			},
 		});
 	} catch (err) {
@@ -114,7 +121,7 @@ const googleLoginHandler = async (req, res) => {
 		});
 
 		const payload = ticket.getPayload();
-		const { email_verified, email, name, sub: googleId } = payload;
+		const { email_verified, email, name, sub: googleId, picture } = payload;
 
 		if (!email_verified)
 			return res
@@ -134,9 +141,16 @@ const googleLoginHandler = async (req, res) => {
 			}).save();
 		}
 
-		const token = jwt.sign({ _id: user._id, role: 1 }, JWT_SECRET, {
+		const token = jwt.sign({ _id: user._id, role: user.role }, JWT_SECRET, {
 			expiresIn: "1d",
 		});
+
+		// Convert role to readable format
+		const roleMap = {
+			2: "Admin",
+			1: "Developer",
+			3: "Viewer",
+		};
 
 		res.status(200).json({
 			success: true,
@@ -147,7 +161,8 @@ const googleLoginHandler = async (req, res) => {
 				name: user.name,
 				email: user.email,
 				username: user.username,
-				role: 1,
+				role: roleMap[user.role] || "Developer",
+				googleProfilePicture: picture,
 			},
 		});
 	} catch (err) {
@@ -516,7 +531,7 @@ const adminGetAllUsers = async (req, res) => {
 			email: user.email,
 			role:
 				user.role === 2 ? "Admin" : user.role === 1 ? "Developer" : "Viewer",
-			status: "active",
+			status: user.status || "active",
 			joinDate: user.createdAt
 				? user.createdAt.toISOString().split("T")[0]
 				: new Date().toISOString().split("T")[0],

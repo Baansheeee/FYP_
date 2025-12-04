@@ -45,6 +45,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		const storedRole = localStorage.getItem("role");
 		const storedName = localStorage.getItem("name");
 		const storedEmail = localStorage.getItem("email");
+		const storedGoogleProfilePicture = localStorage.getItem(
+			"googleProfilePicture"
+		);
 
 		if (storedToken && storedRole) {
 			setUser({
@@ -52,6 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 				role: parseInt(storedRole) as 1 | 2,
 				name: storedName || undefined,
 				email: storedEmail || undefined,
+				googleProfilePicture: storedGoogleProfilePicture || undefined,
 			});
 		}
 		setLoading(false);
