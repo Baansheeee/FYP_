@@ -78,13 +78,11 @@ const createLecture = async (req, res) => {
 		});
 	} catch (error) {
 		console.error("Create Lecture Error:", error);
-		res
-			.status(500)
-			.json({
-				success: false,
-				message: "Error creating lecture",
-				error: error.message,
-			});
+		res.status(500).json({
+			success: false,
+			message: "Error creating lecture",
+			error: error.message,
+		});
 	}
 };
 

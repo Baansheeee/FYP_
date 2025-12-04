@@ -117,12 +117,12 @@ export function LectureForm({
 
 			if (lecture) {
 				// Update existing lecture
-				await axiosInstance.put(`/api/v1/lectures/${lecture._id}`, form, {
+				await axiosInstance.put(`/lectures/${lecture._id}`, form, {
 					headers: { "Content-Type": "multipart/form-data" },
 				});
 			} else {
 				// Create new lecture
-				await axiosInstance.post("/api/v1/lectures/create", form, {
+				await axiosInstance.post("/lectures/create", form, {
 					headers: { "Content-Type": "multipart/form-data" },
 				});
 			}

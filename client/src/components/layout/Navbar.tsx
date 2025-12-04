@@ -30,7 +30,6 @@ const Navbar = ({ isDark = false }: NavbarProps) => {
 	const user = authContext?.user;
 	const logout = authContext?.logout;
 
-	// Auto-detect if we're on admin page
 	const isAdminPage = location.pathname.startsWith("/admin");
 	const shouldBeDark = isDark || isAdminPage;
 
