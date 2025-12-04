@@ -43,9 +43,8 @@ const registerHandler = async (req, res) => {
 			phone,
 			username,
 			answer,
-			role: 1,
+			role: "1",
 		}).save();
-
 		res
 			.status(201)
 			.json({ success: true, message: "User registered successfully", user });
@@ -85,6 +84,9 @@ const loginHandler = async (req, res) => {
 
 		// Convert role to readable format
 		const roleMap = {
+			2: "Admin",
+			1: "Developer",
+			3: "Viewer",
 			2: "Admin",
 			1: "Developer",
 			3: "Viewer",
@@ -137,7 +139,7 @@ const googleLoginHandler = async (req, res) => {
 				username: name.split(" ").join("").toLowerCase(),
 				phone: "N/A",
 				answer: "google",
-				role: 1,
+				role: "1",
 			}).save();
 		}
 
@@ -147,6 +149,9 @@ const googleLoginHandler = async (req, res) => {
 
 		// Convert role to readable format
 		const roleMap = {
+			2: "Admin",
+			1: "Developer",
+			3: "Viewer",
 			2: "Admin",
 			1: "Developer",
 			3: "Viewer",
@@ -182,7 +187,7 @@ const registerAdminHandler = async (req, res) => {
 				.status(400)
 				.json({ success: false, message: "All fields are required" });
 
-		const adminExists = await userModel.findOne({ email, role: 2 });
+		const adminExists = await userModel.findOne({ email, role: "2" });
 		if (adminExists)
 			return res
 				.status(409)
@@ -197,7 +202,7 @@ const registerAdminHandler = async (req, res) => {
 			phone,
 			username,
 			answer,
-			role: 2, // Hardcoded admin role
+			role: "2", // Hardcoded admin role
 		}).save();
 
 		res
@@ -221,7 +226,7 @@ const adminLoginHandler = async (req, res) => {
 				.json({ success: false, message: error.details[0].message });
 
 		const { name, password } = req.body;
-		const admin = await userModel.findOne({ name, role: 2 });
+		const admin = await userModel.findOne({ name, role: "2" });
 		if (!admin)
 			return res
 				.status(404)
@@ -233,7 +238,7 @@ const adminLoginHandler = async (req, res) => {
 				.status(401)
 				.json({ success: false, message: "Invalid password" });
 
-		const token = jwt.sign({ _id: admin._id, role: 2 }, JWT_SECRET, {
+		const token = jwt.sign({ _id: admin._id, role: "2" }, JWT_SECRET, {
 			expiresIn: "1d",
 		});
 
@@ -241,7 +246,12 @@ const adminLoginHandler = async (req, res) => {
 			success: true,
 			message: "Admin login successful",
 			token,
-			admin: { _id: admin._id, name: admin.name, email: admin.email, role: 2 },
+			admin: {
+				_id: admin._id,
+				name: admin.name,
+				email: admin.email,
+				role: "Admin",
+			},
 		});
 	} catch (err) {
 		console.error(err);
@@ -451,7 +461,11 @@ const getUserById = async (req, res) => {
 				username: user.username,
 				phone: user.phone,
 				role:
-					user.role === 2 ? "Admin" : user.role === 1 ? "Developer" : "Viewer",
+					user.role === "2" || user.role === 2
+						? "Admin"
+						: user.role === "1" || user.role === 1
+						? "Developer"
+						: "Viewer",
 				status: user.status || "active",
 				createdAt: user.createdAt,
 			},
@@ -505,7 +519,8 @@ const adminCreateUser = async (req, res) => {
 				_id: newUser._id,
 				name: newUser.name,
 				email: newUser.email,
-				role: newUser.role === 2 ? "Admin" : "Developer",
+				role:
+					newUser.role === "2" || newUser.role === 2 ? "Admin" : "Developer",
 				status: "active",
 				joinDate: newUser.createdAt,
 				tempPassword, // In real app, send this via email
@@ -530,7 +545,11 @@ const adminGetAllUsers = async (req, res) => {
 			name: user.name,
 			email: user.email,
 			role:
-				user.role === 2 ? "Admin" : user.role === 1 ? "Developer" : "Viewer",
+				user.role === "2" || user.role === 2
+					? "Admin"
+					: user.role === "1" || user.role === 1
+					? "Developer"
+					: "Viewer",
 			status: user.status || "active",
 			joinDate: user.createdAt
 				? user.createdAt.toISOString().split("T")[0]
@@ -570,13 +589,13 @@ const adminUpdateUser = async (req, res) => {
 		if (username !== undefined) updateData.username = username;
 		if (status !== undefined) updateData.status = status;
 		if (role !== undefined) {
-			// Convert role string to number
-			if (role === "Admin" || role === 2 || role === "2") updateData.role = 2;
+			// Convert role string to string
+			if (role === "Admin" || role === 2 || role === "2") updateData.role = "2";
 			else if (role === "Developer" || role === 1 || role === "1")
-				updateData.role = 1;
+				updateData.role = "1";
 			else if (role === "Viewer" || role === 3 || role === "3")
-				updateData.role = 3;
-			else updateData.role = parseInt(role);
+				updateData.role = "3";
+			else updateData.role = String(role);
 		}
 
 		const user = await userModel
@@ -599,7 +618,11 @@ const adminUpdateUser = async (req, res) => {
 				username: user.username,
 				phone: user.phone,
 				role:
-					user.role === 2 ? "Admin" : user.role === 1 ? "Developer" : "Viewer",
+					user.role === "2" || user.role === 2
+						? "Admin"
+						: user.role === "1" || user.role === 1
+						? "Developer"
+						: "Viewer",
 				status: user.status || "active",
 				joinDate: user.createdAt
 					? user.createdAt.toISOString().split("T")[0]
@@ -679,7 +702,7 @@ const getAdminById = async (req, res) => {
 				.json({ success: false, message: "Admin not found" });
 
 		// Verify the user is an admin
-		if (admin.role !== 2)
+		if (admin.role !== "2")
 			return res
 				.status(403)
 				.json({ success: false, message: "User is not an admin" });

@@ -368,12 +368,18 @@ const UserDetailsModal = ({
 														<SelectTrigger className="bg-slate-700/60 border-cyan-500/30 text-white focus:border-cyan-500/60 h-9">
 															<SelectValue />
 														</SelectTrigger>
-														<SelectContent className="bg-slate-800 border-cyan-500/30">
-															<SelectItem value="Admin">Admin</SelectItem>
-															<SelectItem value="Developer">
+														<SelectContent className="bg-slate-800 border-cyan-500/30 text-white">
+															<SelectItem value="Admin" className="text-white">
+																Admin
+															</SelectItem>
+															<SelectItem
+																value="Developer"
+																className="text-white">
 																Developer
 															</SelectItem>
-															<SelectItem value="Viewer">Viewer</SelectItem>
+															<SelectItem value="Viewer" className="text-white">
+																Viewer
+															</SelectItem>
 														</SelectContent>
 													</Select>
 												</>
@@ -410,9 +416,15 @@ const UserDetailsModal = ({
 														<SelectTrigger className="bg-slate-700/60 border-cyan-500/30 text-white focus:border-cyan-500/60 h-9">
 															<SelectValue />
 														</SelectTrigger>
-														<SelectContent className="bg-slate-800 border-cyan-500/30">
-															<SelectItem value="active">Active</SelectItem>
-															<SelectItem value="inactive">Inactive</SelectItem>
+														<SelectContent className="bg-slate-800 border-cyan-500/30 text-white">
+															<SelectItem value="active" className="text-white">
+																Active
+															</SelectItem>
+															<SelectItem
+																value="inactive"
+																className="text-white">
+																Inactive
+															</SelectItem>
 														</SelectContent>
 													</Select>
 												</>
