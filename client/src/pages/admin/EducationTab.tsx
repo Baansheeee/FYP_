@@ -17,6 +17,13 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Lecture {
 	_id: string;
@@ -78,10 +85,127 @@ const EducationTab = () => {
 	};
 
 	return (
-		<div className="space-y-6">
-			{showLectureForm ? (
-				// Lecture Form View
-				<div className="mb-8">
+		<>
+			{/* Header Card with Add Button */}
+			<Card className="bg-slate-800/40 backdrop-blur-xl border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 shadow-2xl">
+				<CardHeader className="border-b border-cyan-500/10">
+					<div className="flex items-center justify-between">
+						<div>
+							<CardTitle className="text-2xl bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+								Lecture Management
+							</CardTitle>
+							<p className="text-sm text-cyan-300/60 mt-2">
+								📚 Manage all lectures and course materials
+							</p>
+						</div>
+						<Button
+							onClick={() => {
+								setSelectedLecture(null);
+								setShowLectureForm(true);
+							}}
+							className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-600 hover:to-blue-600 shadow-lg shadow-cyan-500/50 transition-all duration-300"
+							size="lg">
+							<Plus className="mr-2 h-4 w-4" />
+							Add Lecture
+						</Button>
+					</div>
+				</CardHeader>
+			</Card>
+
+			{/* Lectures List */}
+			<Card className="bg-slate-800/40 backdrop-blur-xl border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 shadow-2xl">
+				<CardHeader className="border-b border-cyan-500/10">
+					<CardTitle className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+						All Lectures
+					</CardTitle>
+					<p className="text-sm text-cyan-300/60 mt-2">
+						📖 Total:{" "}
+						<span className="text-cyan-300 font-bold">
+							{allLectures.length}
+						</span>{" "}
+						lectures
+					</p>
+				</CardHeader>
+				<CardContent className="pt-6">
+					<div className="space-y-3">
+						{allLecturesLoading ? (
+							<div className="flex items-center justify-center py-12">
+								<Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
+							</div>
+						) : allLectures.length === 0 ? (
+							<div className="text-center py-12">
+								<BookOpen className="h-12 w-12 text-cyan-500/50 mx-auto mb-3" />
+								<h3 className="text-lg font-semibold text-cyan-300">
+									No lectures yet
+								</h3>
+								<p className="text-cyan-300/60 mt-2">
+									Create your first lecture to get started
+								</p>
+							</div>
+						) : (
+							allLectures.map((lecture) => (
+								<div
+									key={lecture._id}
+									className="p-4 rounded-xl bg-gradient-to-r from-slate-700/40 to-slate-600/30 hover:from-cyan-500/10 hover:to-blue-500/10 transition-all duration-300 border border-cyan-500/10 hover:border-cyan-500/30 group">
+									<div className="flex items-start justify-between gap-4">
+										<div className="flex-1">
+											<h4 className="font-semibold text-lg text-cyan-300 group-hover:text-cyan-200 transition-colors">
+												{lecture.title}
+											</h4>
+											{lecture.description && (
+												<p className="text-sm text-cyan-300/60 mt-1 line-clamp-2">
+													{lecture.description}
+												</p>
+											)}
+											<div className="flex flex-wrap gap-2 mt-3">
+												<Badge className="text-xs bg-cyan-500/20 border-cyan-500/30 text-cyan-300">
+													📁 {lecture.fileType || "File"}
+												</Badge>
+												{lecture.duration > 0 && (
+													<Badge className="text-xs bg-cyan-500/20 border-cyan-500/30 text-cyan-300">
+														⏱️ {lecture.duration} min
+													</Badge>
+												)}
+												<Badge className="text-xs bg-cyan-500/20 border-cyan-500/30 text-cyan-300">
+													📅 {new Date(lecture.createdAt).toLocaleDateString()}
+												</Badge>
+												<Badge className="text-xs bg-cyan-500/20 border-cyan-500/30 text-cyan-300">
+													📄 {lecture.fileName}
+												</Badge>
+											</div>
+										</div>
+										<div className="flex items-center gap-2">
+											<Button
+												variant="outline"
+												size="sm"
+												onClick={() => {
+													setSelectedLecture(lecture);
+													setShowLectureForm(true);
+												}}
+												className="border-cyan-500/30 hover:border-cyan-500/60 hover:bg-cyan-500/10 text-cyan-300">
+												<Edit2 className="h-4 w-4 mr-2" />
+												Edit
+											</Button>
+											<Button
+												variant="destructive"
+												size="sm"
+												onClick={() => setDeleteConfirmationId(lecture._id)}
+												className="hover:bg-red-600">
+												<Trash2 className="h-4 w-4 mr-2" />
+												Delete
+											</Button>
+										</div>
+									</div>
+								</div>
+							))
+						)}
+					</div>
+				</CardContent>
+			</Card>
+
+			{/* Lecture Form Modal */}
+			<Dialog open={showLectureForm} onOpenChange={setShowLectureForm}>
+				<DialogContent className="max-w-2xl bg-transparent border-cyan-500/30">
 					<LectureForm
 						lecture={selectedLecture}
 						onSuccess={() => {
@@ -99,128 +223,10 @@ const EducationTab = () => {
 							setSelectedLecture(null);
 						}}
 					/>
-				</div>
-			) : (
-				// Lectures List View
-				<>
-					<Card className="bg-slate-800/40 backdrop-blur-xl border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 shadow-2xl">
-						<CardHeader className="border-b border-cyan-500/10">
-							<div className="flex items-center justify-between">
-								<div>
-									<CardTitle className="text-2xl bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-										Lecture Management
-									</CardTitle>
-									<p className="text-sm text-cyan-300/60 mt-2">
-										📚 Manage all lectures and course materials
-									</p>
-								</div>
-								<Button
-									onClick={() => {
-										setSelectedLecture(null);
-										setShowLectureForm(true);
-									}}
-									className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-600 hover:to-blue-600 shadow-lg shadow-cyan-500/50 transition-all duration-300"
-									size="lg">
-									<Plus className="mr-2 h-4 w-4" />
-									Add Lecture
-								</Button>
-							</div>
-						</CardHeader>
-					</Card>
-					{/* Lectures List */}
-					<Card className="bg-slate-800/40 backdrop-blur-xl border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 shadow-2xl">
-						<CardHeader className="border-b border-cyan-500/10">
-							<CardTitle className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-								All Lectures
-							</CardTitle>
-							<p className="text-sm text-cyan-300/60 mt-2">
-								📖 Total:{" "}
-								<span className="text-cyan-300 font-bold">
-									{allLectures.length}
-								</span>{" "}
-								lectures
-							</p>
-						</CardHeader>
-						<CardContent className="pt-6">
-							<div className="space-y-3">
-								{allLecturesLoading ? (
-									<div className="flex items-center justify-center py-12">
-										<Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
-									</div>
-								) : allLectures.length === 0 ? (
-									<div className="text-center py-12">
-										<BookOpen className="h-12 w-12 text-cyan-500/50 mx-auto mb-3" />
-										<h3 className="text-lg font-semibold text-cyan-300">
-											No lectures yet
-										</h3>
-										<p className="text-cyan-300/60 mt-2">
-											Create your first lecture to get started
-										</p>
-									</div>
-								) : (
-									allLectures.map((lecture) => (
-										<div
-											key={lecture._id}
-											className="p-4 rounded-xl bg-gradient-to-r from-slate-700/40 to-slate-600/30 hover:from-cyan-500/10 hover:to-blue-500/10 transition-all duration-300 border border-cyan-500/10 hover:border-cyan-500/30 group">
-											<div className="flex items-start justify-between gap-4">
-												<div className="flex-1">
-													<h4 className="font-semibold text-lg text-cyan-300 group-hover:text-cyan-200 transition-colors">
-														{lecture.title}
-													</h4>
-													{lecture.description && (
-														<p className="text-sm text-cyan-300/60 mt-1 line-clamp-2">
-															{lecture.description}
-														</p>
-													)}
-													<div className="flex flex-wrap gap-2 mt-3">
-														<Badge className="text-xs bg-cyan-500/20 border-cyan-500/30 text-cyan-300">
-															📁 {lecture.fileType || "File"}
-														</Badge>
-														{lecture.duration > 0 && (
-															<Badge className="text-xs bg-cyan-500/20 border-cyan-500/30 text-cyan-300">
-																⏱️ {lecture.duration} min
-															</Badge>
-														)}
-														<Badge className="text-xs bg-cyan-500/20 border-cyan-500/30 text-cyan-300">
-															📅{" "}
-															{new Date(lecture.createdAt).toLocaleDateString()}
-														</Badge>
-														<Badge className="text-xs bg-cyan-500/20 border-cyan-500/30 text-cyan-300">
-															📄 {lecture.fileName}
-														</Badge>
-													</div>
-												</div>
-												<div className="flex items-center gap-2">
-													<Button
-														variant="outline"
-														size="sm"
-														onClick={() => {
-															setSelectedLecture(lecture);
-															setShowLectureForm(true);
-														}}
-														className="border-cyan-500/30 hover:border-cyan-500/60 hover:bg-cyan-500/10 text-cyan-300">
-														<Edit2 className="h-4 w-4 mr-2" />
-														Edit
-													</Button>
-													<Button
-														variant="destructive"
-														size="sm"
-														onClick={() => setDeleteConfirmationId(lecture._id)}
-														className="hover:bg-red-600">
-														<Trash2 className="h-4 w-4 mr-2" />
-														Delete
-													</Button>
-												</div>
-											</div>
-										</div>
-									))
-								)}
-							</div>
-						</CardContent>
-					</Card>
-				</>
-			)}
+				</DialogContent>
+			</Dialog>
 
+			{/* Delete Confirmation Dialog */}
 			<AlertDialog
 				open={!!deleteConfirmationId}
 				onOpenChange={(open) => !open && setDeleteConfirmationId(null)}>
@@ -247,7 +253,7 @@ const EducationTab = () => {
 					</div>
 				</AlertDialogContent>
 			</AlertDialog>
-		</div>
+		</>
 	);
 };
 

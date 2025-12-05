@@ -47,6 +47,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import PolicyForm from "@/components/forms/PolicyForm";
+import PlanForm from "@/components/forms/PlanForm";
 
 interface Policy {
 	id: string;
@@ -581,310 +583,83 @@ const ComplianceTab = () => {
 
 			{/* ============ POLICY DIALOG ============ */}
 			<Dialog open={policyDialogOpen} onOpenChange={setPolicyDialogOpen}>
-				<DialogContent className="sm:max-w-[500px] bg-slate-900/95 border-cyan-500/30">
-					<DialogHeader>
-						<DialogTitle className="text-cyan-300">
-							{editingPolicy ? "Edit Policy" : "Create New Policy"}
-						</DialogTitle>
-						<DialogDescription className="text-cyan-300/60">
-							{editingPolicy
-								? "Update the policy details"
-								: "Add a new security or compliance policy"}
-						</DialogDescription>
-					</DialogHeader>
+				<DialogContent className="max-w-2xl bg-slate-900/95 backdrop-blur-xl border-cyan-500/30">
+					<PolicyForm
+						policy={editingPolicy || undefined}
+						onSave={async (data) => {
+							setPolicySaving(true);
+							try {
+								const endpoint = editingPolicy
+									? `/compliance/policies/${editingPolicy.id}`
+									: "/compliance/policies";
+								const method = editingPolicy ? "put" : "post";
+								const response = await axiosInstance[method](endpoint, data);
 
-					<div className="space-y-4 py-4">
-						{/* Name */}
-						<div className="space-y-2">
-							<Label
-								htmlFor="policy-name"
-								className="text-cyan-300 font-medium">
-								Policy Name <span className="text-red-400">*</span>
-							</Label>
-							<Input
-								id="policy-name"
-								placeholder="e.g., Password Policy"
-								value={policyFormData.name}
-								onChange={(e) =>
-									setPolicyFormData({ ...policyFormData, name: e.target.value })
+								if (response.data.success) {
+									toast.success(
+										editingPolicy
+											? "Policy updated successfully"
+											: "Policy created successfully"
+									);
+									closePolicyDialog();
+									fetchPolicies();
 								}
-								className={`h-10 bg-slate-800 border-cyan-500/30 text-cyan-300 placeholder:text-cyan-300/40 focus:border-cyan-400 focus:ring-cyan-500/50 ${
-									policyFormErrors.name ? "border-red-500" : ""
-								}`}
-							/>
-							{policyFormErrors.name && (
-								<p className="text-sm text-red-400">{policyFormErrors.name}</p>
-							)}
-						</div>
-
-						{/* Description */}
-						<div className="space-y-2">
-							<Label
-								htmlFor="policy-desc"
-								className="text-cyan-300 font-medium">
-								Description <span className="text-red-400">*</span>
-							</Label>
-							<textarea
-								id="policy-desc"
-								placeholder="Describe the policy"
-								value={policyFormData.description}
-								onChange={(e) =>
-									setPolicyFormData({
-										...policyFormData,
-										description: e.target.value,
-									})
-								}
-								className={`w-full h-24 p-2 rounded-lg bg-slate-800 border border-cyan-500/30 text-cyan-300 placeholder:text-cyan-300/40 text-sm focus:border-cyan-400 focus:ring-cyan-500/50 ${
-									policyFormErrors.description ? "border-red-500" : ""
-								}`}
-							/>
-							{policyFormErrors.description && (
-								<p className="text-sm text-red-400">
-									{policyFormErrors.description}
-								</p>
-							)}
-						</div>
-
-						{/* Type */}
-						<div className="space-y-2">
-							<Label
-								htmlFor="policy-type"
-								className="text-cyan-300 font-medium">
-								Type
-							</Label>
-							<Select
-								value={policyFormData.type}
-								onValueChange={(value) =>
-									setPolicyFormData({ ...policyFormData, type: value })
-								}>
-								<SelectTrigger
-									id="policy-type"
-									className="h-10 bg-slate-800 border-cyan-500/30 text-cyan-300">
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent className="bg-slate-800 border-cyan-500/30">
-									<SelectItem value="Security">Security</SelectItem>
-									<SelectItem value="Privacy">Privacy</SelectItem>
-									<SelectItem value="Compliance">Compliance</SelectItem>
-									<SelectItem value="Access">Access Control</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
-
-						{/* Enforced */}
-						<div className="flex items-center gap-3 p-3 rounded-lg bg-slate-800/50 border border-cyan-500/20">
-							<input
-								type="checkbox"
-								id="policy-enforced"
-								checked={policyFormData.enforced}
-								onChange={(e) =>
-									setPolicyFormData({
-										...policyFormData,
-										enforced: e.target.checked,
-									})
-								}
-								className="w-4 h-4 cursor-pointer accent-cyan-500"
-							/>
-							<Label
-								htmlFor="policy-enforced"
-								className="cursor-pointer text-sm font-medium text-cyan-300">
-								Enforce this policy for all users
-							</Label>
-						</div>
-					</div>
-
-					<DialogFooter>
-						<Button
-							variant="outline"
-							onClick={closePolicyDialog}
-							disabled={policySaving}
-							className="border-cyan-500/30 hover:border-cyan-500/60 hover:bg-cyan-500/10 text-cyan-300">
-							Cancel
-						</Button>
-						<Button
-							onClick={handleSavePolicy}
-							disabled={policySaving}
-							className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-600 hover:to-blue-600">
-							{policySaving ? "Saving..." : "Save Policy"}
-						</Button>
-					</DialogFooter>
+							} catch (err: any) {
+								console.error("Error saving policy:", err);
+								toast.error(
+									err.response?.data?.message || "Failed to save policy"
+								);
+							} finally {
+								setPolicySaving(false);
+							}
+						}}
+						onCancel={closePolicyDialog}
+						isLoading={policySaving}
+					/>
 				</DialogContent>
 			</Dialog>
 
 			{/* ============ PLAN DIALOG ============ */}
 			<Dialog open={planDialogOpen} onOpenChange={setPlanDialogOpen}>
-				<DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-slate-900/95 border-cyan-500/30">
-					<DialogHeader>
-						<DialogTitle className="text-cyan-300">
-							{editingPlan ? "Edit Plan" : "Create New Plan"}
-						</DialogTitle>
-						<DialogDescription className="text-cyan-300/60">
-							{editingPlan
-								? "Update the plan details"
-								: "Add a new subscription plan"}
-						</DialogDescription>
-					</DialogHeader>
+				<DialogContent className="max-w-2xl bg-slate-900/95 backdrop-blur-xl border-cyan-500/30">
+					<PlanForm
+						plan={editingPlan || undefined}
+						onSave={async (data) => {
+							setPlanSaving(true);
+							try {
+								const endpoint = editingPlan
+									? `/compliance/plans/${editingPlan.id}`
+									: "/compliance/plans";
+								const method = editingPlan ? "put" : "post";
+								const response = await axiosInstance[method](endpoint, {
+									name: data.name,
+									description: data.description,
+									price: Number(data.price),
+									features: data.features,
+									status: data.status,
+								});
 
-					<div className="space-y-4 py-4">
-						{/* Name */}
-						<div className="space-y-2">
-							<Label htmlFor="plan-name" className="text-cyan-300 font-medium">
-								Plan Name <span className="text-red-400">*</span>
-							</Label>
-							<Input
-								id="plan-name"
-								placeholder="e.g., Professional"
-								value={planFormData.name}
-								onChange={(e) =>
-									setPlanFormData({ ...planFormData, name: e.target.value })
+								if (response.data.success) {
+									toast.success(
+										editingPlan
+											? "Plan updated successfully"
+											: "Plan created successfully"
+									);
+									closePlanDialog();
+									fetchPlans();
 								}
-								className={`h-10 bg-slate-800 border-cyan-500/30 text-cyan-300 placeholder:text-cyan-300/40 focus:border-cyan-400 focus:ring-cyan-500/50 ${
-									planFormErrors.name ? "border-red-500" : ""
-								}`}
-							/>
-							{planFormErrors.name && (
-								<p className="text-sm text-red-400">{planFormErrors.name}</p>
-							)}
-						</div>
-
-						{/* Price */}
-						<div className="space-y-2">
-							<Label htmlFor="plan-price" className="text-cyan-300 font-medium">
-								Price (USD) <span className="text-red-400">*</span>
-							</Label>
-							<Input
-								id="plan-price"
-								type="number"
-								placeholder="99"
-								value={planFormData.price}
-								onChange={(e) =>
-									setPlanFormData({ ...planFormData, price: e.target.value })
-								}
-								className={`h-10 bg-slate-800 border-cyan-500/30 text-cyan-300 placeholder:text-cyan-300/40 focus:border-cyan-400 focus:ring-cyan-500/50 ${
-									planFormErrors.price ? "border-red-500" : ""
-								}`}
-							/>
-							{planFormErrors.price && (
-								<p className="text-sm text-red-400">{planFormErrors.price}</p>
-							)}
-						</div>
-
-						{/* Description */}
-						<div className="space-y-2">
-							<Label htmlFor="plan-desc" className="text-cyan-300 font-medium">
-								Description
-							</Label>
-							<textarea
-								id="plan-desc"
-								placeholder="Describe the plan"
-								value={planFormData.description}
-								onChange={(e) =>
-									setPlanFormData({
-										...planFormData,
-										description: e.target.value,
-									})
-								}
-								className="w-full h-20 p-2 rounded-lg bg-slate-800 border border-cyan-500/30 text-cyan-300 placeholder:text-cyan-300/40 text-sm focus:border-cyan-400 focus:ring-cyan-500/50"
-							/>
-						</div>
-
-						{/* Status */}
-						<div className="space-y-2">
-							<Label
-								htmlFor="plan-status"
-								className="text-cyan-300 font-medium">
-								Status
-							</Label>
-							<Select
-								value={planFormData.status}
-								onValueChange={(value) =>
-									setPlanFormData({
-										...planFormData,
-										status: value as "active" | "inactive",
-									})
-								}>
-								<SelectTrigger
-									id="plan-status"
-									className="h-10 bg-slate-800 border-cyan-500/30 text-cyan-300">
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent className="bg-slate-800 border-cyan-500/30">
-									<SelectItem value="active">Active</SelectItem>
-									<SelectItem value="inactive">Inactive</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
-
-						{/* Features */}
-						<div className="space-y-2">
-							<Label className="text-cyan-300 font-medium">
-								Features <span className="text-red-400">*</span>
-							</Label>
-							<div className="flex gap-2">
-								<Input
-									placeholder="Enter a feature"
-									value={featureInput}
-									onChange={(e) => setFeatureInput(e.target.value)}
-									onKeyPress={(e) => {
-										if (e.key === "Enter") {
-											addFeature();
-										}
-									}}
-									className="h-10 flex-1 bg-slate-800 border-cyan-500/30 text-cyan-300 placeholder:text-cyan-300/40 focus:border-cyan-400 focus:ring-cyan-500/50"
-								/>
-								<Button
-									type="button"
-									onClick={addFeature}
-									size="sm"
-									className="border-cyan-500/30 hover:border-cyan-500/60 hover:bg-cyan-500/10 text-cyan-300"
-									variant="outline">
-									Add
-								</Button>
-							</div>
-							{planFormErrors.features && (
-								<p className="text-sm text-red-400">
-									{planFormErrors.features}
-								</p>
-							)}
-
-							{/* Features List */}
-							{planFormData.features.length > 0 && (
-								<div className="space-y-2 mt-3">
-									{planFormData.features.map((feature, idx) => (
-										<div
-											key={idx}
-											className="flex items-center justify-between p-2 rounded-lg bg-slate-800/50 border border-cyan-500/20">
-											<span className="text-sm text-cyan-300">{feature}</span>
-											<Button
-												type="button"
-												size="sm"
-												variant="ghost"
-												onClick={() => removeFeature(idx)}
-												className="h-6 w-6 p-0 text-cyan-300 hover:text-cyan-200 hover:bg-cyan-500/10">
-												<X className="w-4 h-4" />
-											</Button>
-										</div>
-									))}
-								</div>
-							)}
-						</div>
-					</div>
-
-					<DialogFooter>
-						<Button
-							variant="outline"
-							onClick={closePlanDialog}
-							disabled={planSaving}
-							className="border-cyan-500/30 hover:border-cyan-500/60 hover:bg-cyan-500/10 text-cyan-300">
-							Cancel
-						</Button>
-						<Button
-							onClick={handleSavePlan}
-							disabled={planSaving}
-							className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-600 hover:to-blue-600">
-							{planSaving ? "Saving..." : "Save Plan"}
-						</Button>
-					</DialogFooter>
+							} catch (err: any) {
+								console.error("Error saving plan:", err);
+								toast.error(
+									err.response?.data?.message || "Failed to save plan"
+								);
+							} finally {
+								setPlanSaving(false);
+							}
+						}}
+						onCancel={closePlanDialog}
+						isLoading={planSaving}
+					/>
 				</DialogContent>
 			</Dialog>
 

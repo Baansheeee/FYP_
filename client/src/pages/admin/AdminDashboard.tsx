@@ -19,7 +19,7 @@ const Admin = () => {
 			<div className="fixed inset-0 overflow-hidden pointer-events-none">
 				<div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
 				<div
-					className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"
+					className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"
 					style={{ animationDelay: "1s" }}></div>
 				<div
 					className="absolute top-1/2 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"
@@ -59,7 +59,7 @@ const Admin = () => {
 								<Shield className="w-8 h-8 text-white" />
 							</div>
 							<div className="flex flex-col items-center">
-								<h1 className="text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+								<h1 className="text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
 									Admin Control
 								</h1>
 								<p className="text-cyan-300/70 mt-2 text-lg">

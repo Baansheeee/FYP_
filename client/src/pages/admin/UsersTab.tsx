@@ -132,10 +132,10 @@ const UsersTab = () => {
 											<Badge
 												className={`${
 													user.role === "Admin"
-														? "bg-purple-500/80"
+														? "bg-purple-500"
 														: user.role === "Developer"
-														? "bg-blue-500/80"
-														: "bg-gray-500/80"
+														? "bg-blue-500"
+														: "bg-gray-500"
 												} text-white`}>
 												{user.role}
 											</Badge>
