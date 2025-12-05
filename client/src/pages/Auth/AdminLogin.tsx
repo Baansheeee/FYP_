@@ -112,8 +112,15 @@ const AdminLogin = () => {
 			const validRole = role === 2 ? 2 : 1;
 			const userName = userObj.name || (isAdmin ? name : undefined);
 			const userEmail = userObj.email || (isAdmin ? undefined : email);
+			const userId = userObj._id || (isAdmin ? userObj._id : undefined);
 
-			login({ token, role: validRole, name: userName, email: userEmail });
+			login({
+				token,
+				role: validRole,
+				name: userName,
+				email: userEmail,
+				userId,
+			});
 
 			navigate(validRole === 2 ? "/admin" : "/dashboard");
 		} catch (err: any) {

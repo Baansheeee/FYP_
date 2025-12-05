@@ -117,12 +117,12 @@ export function LectureForm({
 
 			if (lecture) {
 				// Update existing lecture
-				await axiosInstance.put(`/api/v1/lectures/${lecture._id}`, form, {
+				await axiosInstance.put(`/lectures/${lecture._id}`, form, {
 					headers: { "Content-Type": "multipart/form-data" },
 				});
 			} else {
 				// Create new lecture
-				await axiosInstance.post("/api/v1/lectures/create", form, {
+				await axiosInstance.post("/lectures/create", form, {
 					headers: { "Content-Type": "multipart/form-data" },
 				});
 			}
@@ -136,39 +136,41 @@ export function LectureForm({
 	};
 
 	return (
-		<Card className="w-full">
-			<CardHeader>
-				<CardTitle>{lecture ? "Edit Lecture" : "Create New Lecture"}</CardTitle>
-				<CardDescription>
+		<Card className="w-full bg-slate-800/40 p-4 my-4 backdrop-blur-xl border-cyan-500/20">
+			<CardHeader className="px-0 pt-2 pb-4 text-center">
+				<CardTitle className="text-cyan-300 text-3xl">
+					{lecture ? "Edit Lecture" : "Create New Lecture"}
+				</CardTitle>
+				<CardDescription className="text-cyan-300/60 mt-1">
 					{lecture
 						? "Update lecture details"
 						: "Add a new lecture to the system"}
 				</CardDescription>
 			</CardHeader>
-			<CardContent>
+			<CardContent className="px-0">
 				<form onSubmit={handleSubmit} className="space-y-4">
 					{error && (
-						<div className="bg-destructive/10 text-destructive p-3 rounded-md text-sm">
+						<div className="bg-red-500/10 text-red-400 p-3 rounded-md text-sm border border-red-500/30">
 							{error}
 						</div>
 					)}
-
 					{/* Title */}
 					<div className="space-y-2 form-field">
-						<label className="text-sm font-medium label-animate">Title *</label>
+						<label className="text-sm font-medium label-animate text-cyan-300">
+							Title
+						</label>
 						<Input
 							name="title"
 							placeholder="Enter lecture title"
 							value={formData.title}
 							onChange={handleInputChange}
 							required
-							className="placeholder-animate"
+							className="placeholder-animate border-cyan-500/30 focus:border-cyan-500 bg-slate-950/50"
 						/>
 					</div>
-
 					{/* Description */}
 					<div className="space-y-2 form-field">
-						<label className="text-sm font-medium label-animate">
+						<label className="text-sm font-medium label-animate text-cyan-300">
 							Description
 						</label>
 						<Textarea
@@ -177,13 +179,12 @@ export function LectureForm({
 							value={formData.description}
 							onChange={handleInputChange}
 							rows={4}
-							className="placeholder-animate"
+							className="placeholder-animate border-cyan-500/30 focus:border-cyan-500 bg-slate-950/50"
 						/>
 					</div>
-
 					{/* Duration */}
 					<div className="space-y-2 form-field">
-						<label className="text-sm font-medium label-animate">
+						<label className="text-sm font-medium label-animate text-cyan-300">
 							Duration (minutes)
 						</label>
 						<Input
@@ -193,17 +194,16 @@ export function LectureForm({
 							value={formData.duration}
 							onChange={handleInputChange}
 							min="0"
-							className="placeholder-animate"
+							className="placeholder-animate border-cyan-500/30 focus:border-cyan-500 bg-slate-950/50"
 						/>
 					</div>
-
 					{/* File Upload Method Toggle */}
 					<div className="space-y-2 form-field">
-						<label className="text-sm font-medium label-animate">
+						<label className="text-sm font-medium label-animate text-cyan-300">
 							Upload Method
 						</label>
 						<div className="flex gap-4">
-							<label className="flex items-center gap-2 cursor-pointer">
+							<label className="flex items-center gap-2 cursor-pointer text-cyan-300">
 								<input
 									type="radio"
 									value="file"
@@ -214,7 +214,7 @@ export function LectureForm({
 								/>
 								<span className="text-sm">Upload File</span>
 							</label>
-							<label className="flex items-center gap-2 cursor-pointer">
+							<label className="flex items-center gap-2 cursor-pointer text-cyan-300">
 								<input
 									type="radio"
 									value="url"
@@ -227,34 +227,33 @@ export function LectureForm({
 							</label>
 						</div>
 					</div>
-
 					{/* File Input or URL Input */}
 					{uploadMethod === "file" ? (
 						<div className="space-y-2 form-field">
-							<label className="text-sm font-medium label-animate">
-								Select File {!lecture && "*"}
+							<label className="text-sm font-medium label-animate text-cyan-300">
+								Select File {!lecture}
 							</label>
 							<Input
 								type="file"
 								onChange={handleFileChange}
 								accept=".mp4,.webm,.pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.ppt,.pptx,.txt"
-								className="placeholder-animate"
+								className="placeholder-animate border-cyan-500/30 hover:cursor-pointer focus:border-cyan-500 bg-slate-950/50"
 							/>
-							<p className="text-xs text-muted-foreground">
+							<p className="text-xs text-cyan-300/60">
 								Supported: Video, PDF, Images, Documents (Max 100MB)
 							</p>
 							{file && (
-								<p className="text-xs text-green-600">Selected: {file.name}</p>
+								<p className="text-xs text-green-400">Selected: {file.name}</p>
 							)}
 							{lecture && lecture.fileUrl && (
-								<p className="text-xs text-muted-foreground">
+								<p className="text-xs text-cyan-300/60">
 									Current: {lecture.fileName}
 								</p>
 							)}
 						</div>
 					) : (
 						<div className="space-y-2 form-field">
-							<label className="text-sm font-medium label-animate">
+							<label className="text-sm font-medium label-animate text-cyan-300">
 								File URL *
 							</label>
 							<Input
@@ -262,17 +261,16 @@ export function LectureForm({
 								placeholder="Enter external file URL"
 								value={formData.fileUrl}
 								onChange={handleInputChange}
-								className="placeholder-animate"
+								className="placeholder-animate border-cyan-500/30 focus:border-cyan-500 bg-slate-950/50"
 							/>
 						</div>
-					)}
-
+					)}{" "}
 					{/* Form Actions */}
 					<div className="flex gap-2 pt-4">
 						<Button
 							type="submit"
 							disabled={loading}
-							className="flex-1 form-field">
+							className="flex-1 form-field bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-600 hover:to-blue-600 shadow-lg shadow-cyan-500/50">
 							{loading ? (
 								<>
 									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -289,7 +287,7 @@ export function LectureForm({
 							variant="outline"
 							onClick={onCancel}
 							disabled={loading}
-							className="flex-1 bg-transparent form-field">
+							className="flex-1 bg-transparent form-field border-cyan-500/30 hover:border-cyan-500/60 hover:bg-cyan-500/10 text-cyan-300">
 							Cancel
 						</Button>
 					</div>

@@ -16,12 +16,12 @@ import {
 import "./styles/reactflow.css";
 import Index from "./pages/Index";
 import UserDashboard from "./pages/user/UserDashboard";
+import UserProfile from "./pages/user/UserProfile";
 import Chatbot from "./pages/user/Chatbot";
 import ArchitectureDesigner from "./pages/user/architecture/ArchitectureDesigner";
 import CostEstimate from "./pages/user/CostEstimate";
 import Version from "./pages/user/Version";
 import Deployment from "./pages/user/Deployment";
-// import Canvas from "./pages/user/architecture/Canvas";
 import ImportResources from "./pages/user/ImportResources";
 import DevOps from "./pages/user/DevOps";
 import Performance from "./pages/user/Performance";
@@ -109,6 +109,14 @@ const App = () => (
 							<Route
 								path="/auth/forgot-password"
 								element={<ForgotPassword />}
+							/>
+							<Route
+								path="/user/profile"
+								element={
+									<UserPrivateRoute>
+										<UserProfile />
+									</UserPrivateRoute>
+								}
 							/>
 							<Route
 								path="/user/dashboard"

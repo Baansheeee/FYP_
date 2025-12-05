@@ -45,8 +45,8 @@ router.get("/user-auth", requireSignIn, isUser, (req, res) => {
 // Google login
 router.post("/google-login", googleLoginHandler);
 
-// Update user profile
-router.put("/profile", requireSignIn, isUser, updateProfile);
+// Update user profile (both users and admins can update their own)
+router.put("/profile", requireSignIn, updateProfile);
 
 // Get user details by ID (admin or user can view)
 router.get("/user/:id", requireSignIn, getUserById);

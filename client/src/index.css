@@ -7,6 +7,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
+    /* Light mode colors (default) */
     /* Base colors - White background with purple accents */
     --background: 0 0% 100%;
     --foreground: 270 15% 15%;
@@ -73,6 +74,72 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 270 70% 40%;
     --sidebar-border: 270 30% 92%;
     --sidebar-ring: 270 70% 40%;
+  }
+
+  html.dark {
+    /* Dark mode colors */
+    --background: 217 32% 17%;
+    --foreground: 210 40% 96%;
+
+    /* Card styling */
+    --card: 217 32% 17%;
+    --card-foreground: 210 40% 96%;
+
+    /* Popover */
+    --popover: 217 32% 17%;
+    --popover-foreground: 210 40% 96%;
+
+    /* Primary - Cyan/Blue for dark mode */
+    --primary: 188 100% 50%;
+    --primary-foreground: 217 32% 17%;
+    --primary-hover: 188 100% 45%;
+
+    /* Secondary - Lighter cyan */
+    --secondary: 188 100% 80%;
+    --secondary-foreground: 217 32% 17%;
+
+    /* Muted - Darker gray with blue tint */
+    --muted: 217 14% 35%;
+    --muted-foreground: 210 14% 66%;
+
+    /* Accent - Bright cyan/blue */
+    --accent: 188 100% 50%;
+    --accent-foreground: 217 32% 17%;
+
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders - Darker with blue tint */
+    --border: 217 32% 35%;
+    --input: 217 32% 25%;
+    --ring: 188 100% 50%;
+
+    /* Purple Gradient Tokens - adjusted for dark mode */
+    --gradient-purple-start: 188 100% 50%;
+    --gradient-purple-mid: 188 100% 45%;
+    --gradient-purple-end: 200 100% 50%;
+
+    /* Glassmorphism */
+    --glass-bg: 217 32% 17% / 0.5;
+    --glass-border: 217 32% 35%;
+
+    /* Shadows with cyan tint */
+    --shadow-sm: 0 1px 2px 0 hsl(188 100% 50% / 0.1);
+    --shadow-md: 0 4px 6px -1px hsl(188 100% 50% / 0.15);
+    --shadow-lg: 0 10px 15px -3px hsl(188 100% 50% / 0.2);
+    --shadow-xl: 0 20px 25px -5px hsl(188 100% 50% / 0.25);
+    --shadow-purple-glow: 0 0 30px hsl(188 100% 50% / 0.4);
+
+    /* Sidebar */
+    --sidebar-background: 217 32% 17%;
+    --sidebar-foreground: 210 40% 96%;
+    --sidebar-primary: 188 100% 50%;
+    --sidebar-primary-foreground: 217 32% 17%;
+    --sidebar-accent: 217 32% 35%;
+    --sidebar-accent-foreground: 188 100% 50%;
+    --sidebar-border: 217 32% 35%;
+    --sidebar-ring: 188 100% 50%;
   }
 }
 

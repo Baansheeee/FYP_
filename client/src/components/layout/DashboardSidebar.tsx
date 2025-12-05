@@ -32,11 +32,18 @@ import {
 	Gauge,
 	Bell,
 	Cpu,
+	User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 const modules = [
+	{
+		name: "Profile",
+		path: "/user/profile",
+		icon: User,
+		subItems: [],
+	},
 	{
 		name: "Dashboard",
 		path: "/user/dashboard",

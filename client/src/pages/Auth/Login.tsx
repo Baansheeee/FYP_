@@ -99,6 +99,7 @@ const LoginPage = () => {
 				role: validRole,
 				name: data.user.name,
 				email: data.user.email,
+				userId: data.user._id,
 			});
 			// Flag for dashboard welcome toast
 			sessionStorage.setItem("loginWelcome", "true");
@@ -145,6 +146,7 @@ const LoginPage = () => {
 				name: data.user.name,
 				email: data.user.email,
 				googleProfilePicture: profilePictureUrl,
+				userId: data.user._id,
 			});
 
 			// Store Google profile picture in localStorage

@@ -39,31 +39,31 @@ const Dashboard = () => {
 			icon: MessageSquare,
 			title: "Smart Chatbot",
 			description: "Describe your AWS needs in natural language",
-			path: "/chatbot",
+			path: "/user/chatbot",
 		},
 		{
 			icon: Network,
 			title: "Design Architecture",
 			description: "Create visual AWS architectures",
-			path: "/architecture/designer",
+			path: "/user/architecture/create",
 		},
 		{
 			icon: Rocket,
 			title: "Deploy Infrastructure",
 			description: "One-click deployment to AWS",
-			path: "/deployment",
+			path: "/user/deployment",
 		},
 		{
 			icon: Upload,
 			title: "Import Resources",
 			description: "Reverse engineer existing AWS resources",
-			path: "/import/connect",
+			path: "/user/import/connect",
 		},
 		{
 			icon: GitBranch,
 			title: "Version Control",
 			description: "Track and manage architecture versions",
-			path: "/version",
+			path: "/user/version",
 		},
 	];
 
@@ -71,19 +71,19 @@ const Dashboard = () => {
 		{
 			icon: History,
 			label: "Chat History",
-			path: "/chatbot/history",
+			path: "/user/chatbot/history",
 			description: "View past conversations",
 		},
 		{
 			icon: FileText,
 			label: "Templates",
-			path: "/chatbot/templates",
+			path: "/user/chatbot/templates",
 			description: "Pre-built chat templates",
 		},
 		{
 			icon: Zap,
 			label: "Sessions",
-			path: "/chatbot/sessions",
+			path: "/user/chatbot/sessions",
 			description: "Manage chat sessions",
 		},
 	];
@@ -92,19 +92,19 @@ const Dashboard = () => {
 		{
 			icon: Cloud,
 			label: "My Architectures",
-			path: "/architecture/list",
+			path: "/user/architecture/list",
 			description: "Browse your designs",
 		},
 		{
 			icon: Pencil,
 			label: "Visual Editor",
-			path: "/architecture/editor",
+			path: "/user/architecture/editor",
 			description: "Advanced editor",
 		},
 		{
 			icon: Network,
 			label: "Templates",
-			path: "/architecture/templates",
+			path: "/user/architecture/templates",
 			description: "Pre-built templates",
 		},
 		{
@@ -119,19 +119,19 @@ const Dashboard = () => {
 		{
 			icon: BarChart3,
 			label: "Cost Analysis",
-			path: "/cost/analysis",
+			path: "/user/cost/analysis",
 			description: "Detailed breakdown",
 		},
 		{
 			icon: FileText,
 			label: "Reports",
-			path: "/cost/reports",
+			path: "/user/cost/reports",
 			description: "Historical reports",
 		},
 		{
 			icon: AlertCircle,
 			label: "Budget Alerts",
-			path: "/cost/alerts",
+			path: "/user/cost/alerts",
 			description: "Set thresholds",
 		},
 	];
@@ -140,19 +140,19 @@ const Dashboard = () => {
 		{
 			icon: History,
 			label: "History",
-			path: "/deployment/history",
+			path: "/user/deployment/history",
 			description: "Past deployments",
 		},
 		{
 			icon: Activity,
 			label: "Status",
-			path: "/deployment/status",
+			path: "/user/deployment/status",
 			description: "Real-time progress",
 		},
 		{
 			icon: TrendingUp,
 			label: "Rollback",
-			path: "/deployment/rollback",
+			path: "/user/deployment/rollback",
 			description: "Restore versions",
 		},
 	];
@@ -161,19 +161,19 @@ const Dashboard = () => {
 		{
 			icon: History,
 			label: "Version History",
-			path: "/version/history",
+			path: "/user/version/history",
 			description: "All versions",
 		},
 		{
 			icon: TrendingUp,
 			label: "Compare",
-			path: "/version/compare",
+			path: "/user/version/compare",
 			description: "Side-by-side diff",
 		},
 		{
 			icon: Zap,
 			label: "Restore",
-			path: "/version/restore",
+			path: "/user/version/restore",
 			description: "Restore previous",
 		},
 	];
@@ -182,19 +182,19 @@ const Dashboard = () => {
 		{
 			icon: Package,
 			label: "Containers",
-			path: "/devops/containers",
+			path: "/user/devops/containers",
 			description: "Manage containers",
 		},
 		{
 			icon: Workflow,
 			label: "Pipeline",
-			path: "/devops/pipeline",
+			path: "/user/devops/pipeline",
 			description: "CI/CD pipelines",
 		},
 		{
 			icon: Activity,
 			label: "Logs",
-			path: "/devops/logs",
+			path: "/user/devops/logs",
 			description: "View application logs",
 		},
 	];
@@ -203,19 +203,19 @@ const Dashboard = () => {
 		{
 			icon: Gauge,
 			label: "Metrics",
-			path: "/performance/metrics",
+			path: "/user/performance/metrics",
 			description: "Performance metrics",
 		},
 		{
 			icon: Activity,
 			label: "Health Check",
-			path: "/performance/health",
+			path: "/user/performance/health",
 			description: "System health",
 		},
 		{
 			icon: Bell,
 			label: "Alerts",
-			path: "/performance/alerts",
+			path: "/user/performance/alerts",
 			description: "Configure alerts",
 		},
 	];

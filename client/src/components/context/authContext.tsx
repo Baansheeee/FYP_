@@ -19,6 +19,7 @@ interface User {
 	token?: string;
 	role: 1 | 2; // 1: user, 2: admin
 	googleProfilePicture?: string;
+	userId?: string;
 }
 
 interface AuthContextType {
@@ -48,6 +49,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 		const storedGoogleProfilePicture = localStorage.getItem(
 			"googleProfilePicture"
 		);
+		const storedUserId = localStorage.getItem("userId");
 
 		if (storedToken && storedRole) {
 			setUser({
@@ -56,6 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 				name: storedName || undefined,
 				email: storedEmail || undefined,
 				googleProfilePicture: storedGoogleProfilePicture || undefined,
+				userId: storedUserId || undefined,
 			});
 		}
 		setLoading(false);
@@ -71,6 +74,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 				"googleProfilePicture",
 				userData.googleProfilePicture
 			);
+		if (userData.userId) localStorage.setItem("userId", userData.userId);
 
 		setUser(userData);
 	};
@@ -97,6 +101,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 			localStorage.removeItem("name");
 			localStorage.removeItem("email");
 			localStorage.removeItem("googleProfilePicture");
+			localStorage.removeItem("userId");
 			setUser(null);
 		}
 	};

@@ -33,7 +33,7 @@ const requireSignIn = (req, res, next) => {
 // Middleware to check if the user is a regular user (role = 1)
 const isUser = (req, res, next) => {
 	try {
-		if (req.user.role !== 1) {
+		if (req.user.role !== 1 && req.user.role !== "1") {
 			return res
 				.status(403)
 				.json({ success: false, message: "Access denied. Users only." });
@@ -50,7 +50,7 @@ const isUser = (req, res, next) => {
 // Middleware to check if the user is admin (role = 2)
 const isAdmin = (req, res, next) => {
 	try {
-		if (req.user.role !== 2) {
+		if (req.user.role !== 2 && req.user.role !== "2") {
 			return res
 				.status(403)
 				.json({ success: false, message: "Access denied. Admins only." });

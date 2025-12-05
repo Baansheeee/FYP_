@@ -4,12 +4,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Navbar from "@/components/layout/Navbar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Shield, Users, FileText, BookOpen } from "lucide-react";
+import { Shield, Users, FileText, BookOpen, User } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import UsersTab from "@/pages/admin/UsersTab";
 import EducationTab from "@/pages/admin/EducationTab";
 import AuditLogsTab from "@/pages/admin/AuditLogsTab";
 import ComplianceTab from "@/pages/admin/ComplianceTab";
+import AdminProfileTab from "@/pages/admin/AdminProfileTab";
 
 const Admin = () => {
 	return (
@@ -18,7 +19,7 @@ const Admin = () => {
 			<div className="fixed inset-0 overflow-hidden pointer-events-none">
 				<div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
 				<div
-					className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"
+					className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"
 					style={{ animationDelay: "1s" }}></div>
 				<div
 					className="absolute top-1/2 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"
@@ -58,7 +59,7 @@ const Admin = () => {
 								<Shield className="w-8 h-8 text-white" />
 							</div>
 							<div className="flex flex-col items-center">
-								<h1 className="text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+								<h1 className="text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
 									Admin Control
 								</h1>
 								<p className="text-cyan-300/70 mt-2 text-lg">
@@ -68,7 +69,13 @@ const Admin = () => {
 						</div>
 						<Tabs defaultValue="users" className="w-full">
 							<div className="flex flex-row justify-center items-center">
-								<TabsList className="grid w-full max-w-4xl grid-cols-4 bg-slate-800/40 backdrop-blur-xl border border-cyan-500/20 rounded-xl p-1">
+								<TabsList className="grid w-full max-w-6xl grid-cols-5 bg-slate-800/40 backdrop-blur-xl border border-cyan-500/20 rounded-xl p-1">
+									<TabsTrigger
+										value="profile"
+										className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-cyan-300 rounded-lg transition-all duration-300">
+										<User className="w-4 h-4 mr-2" />
+										Profile
+									</TabsTrigger>
 									<TabsTrigger
 										value="users"
 										className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500/20 data-[state=active]:to-blue-500/20 data-[state=active]:text-cyan-300 rounded-lg transition-all duration-300">
@@ -95,6 +102,11 @@ const Admin = () => {
 									</TabsTrigger>
 								</TabsList>
 							</div>
+
+							{/* Profile Tab */}
+							<TabsContent value="profile" className="space-y-6">
+								<AdminProfileTab />
+							</TabsContent>
 
 							{/* Users Tab */}
 							<TabsContent value="users" className="space-y-6">
