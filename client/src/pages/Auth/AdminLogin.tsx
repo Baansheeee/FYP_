@@ -220,9 +220,11 @@ const AdminLogin = () => {
 									label={isAdmin ? "Name" : "Email"}
 									value={isAdmin ? name : email}
 									onChange={(e) => {
-										isAdmin
-											? setName(e.target.value)
-											: setEmail(e.target.value);
+										if (isAdmin) {
+											setName(e.target.value);
+										} else {
+											setEmail(e.target.value);
+										}
 										// Clear error when user starts typing
 										if (errors[isAdmin ? "name" : "email"]) {
 											setErrors({
